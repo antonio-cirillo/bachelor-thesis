@@ -12,7 +12,7 @@ Per permettere l'interazione con i database NoSQL all'interno di Fly sono stati 
 \end{itemize}
 Per poter interagire con i database MySQL Fly mette a disposizione dell'utente due entità:
 \begin{itemize}
-    \item \verb|sql| - entità che permette di stabilire una connessione ad un database SQL;
+    \item \verb|sql| - entità che permette di stabilire una connessione ad un database di tipo MySQL;
     \item \verb|query| - entità che permette di creare ed eseguire query sul database.
 \end{itemize}
 Grazie all'entità \verb|query| l'utente può effettuare diverse tipologie di query:
@@ -28,23 +28,23 @@ Poiché uno degli obiettivi implementativi è proprio quello di creare un intera
 \subsection{Connessione al database}
 Come già introdotto nel capitolo precedente, la possibilità di stabilire una connessione ad un database NoSQL è stata resa possibile mediante l'implementazione dell'entità \verb|nosql|. L'obiettivo principale è quello di creare un meccanismo di connessione simile a quello già presente per i database SQL. La dichiarazione di una variabile di tipo \verb|sql| è composta dai seguenti parametri \cite{giuseppe}:
 \begin{itemize}
-    \item \textbf{db_name}: stringa rappresentante il nome del database;
-    \item \textbf{resource_group} (solo in caso il database sia su Azure): stringa rappresentante il nome del ResourceGroup in cui è contenuta l’istanza del servizio DBaaS;
+    \item \textbf{db\textunderscore name}: stringa rappresentante il nome del database;
+    \item \textbf{resource\textunderscore  group} (solo in caso il database sia su Azure): stringa rappresentante il nome del ResourceGroup in cui è contenuta l’istanza del servizio DBaaS;
     \item \textbf{instance} (solo in caso il database sia su Cloud): stringa rappresentante il nome dell’istanza del servizio DBaaS su cui è in esecuzione il database;
     \item \textbf{user}: stringa rappresentante il nome utente per l’accesso al database;
     \item \textbf{password}: stringa rappresentante la password di accesso al database.
 \end{itemize}
 I database NoSQL, a differenza dei database SQL, partizionano il database in un insieme di collezioni. Per questo motivo l'entità \verb|nosql| deve permette di stabilire una connessione ad una precisa collezione del database. La dichiarazione di una variabile di tipo \verb|nosql| è composta quindi dai seguenti parametri:
 \begin{itemize}
-    \item \textbf{endpoint} (solo in caso non si usano i parametri \textbf{resource_group} e \textbf{instance}): stringa rappresentante l'endpoint del database;
-    \item \textbf{resource_group} (solo in caso il database sia su Azure): stringa rappresentante il nome del ResourceGroup in cui è contenuta l’istanza del servizio DBaaS;
+    \item \textbf{endpoint} (solo in caso non si usano i parametri \textbf{resource\textunderscore group} e \textbf{instance}): stringa rappresentante l'endpoint del database;
+    \item \textbf{resource\textunderscore group} (solo in caso il database sia su Azure): stringa rappresentante il nome del ResourceGroup in cui è contenuta l’istanza del servizio DBaaS;
     \item \textbf{instance} (solo in caso il database sia su Azure): stringa rappresentante il nome dell’istanza del servizio DBaaS su cui è in esecuzione il database;
-    \item \textbf{db_name}: stringa rappresentante il nome del database;
+    \item \textbf{db\textunderscore name}: stringa rappresentante il nome del database;
     \item \textbf{collection}: stringa rappresentante il nome della collezione del database;
     \item \textbf{properties} (opzionale): stringa rappresentante il path assoluto del file log4j.properties.
 \end{itemize}
 MongoDB utilizza \textbf{Log4J}, una libreria Java sviluppata dalla Apache Software Foundation che permette di mettere a punto un ottimo sistema di logging per tenere sotto controllo il comportamento di una applicazione, sia in fase di sviluppo che in fase di test e messa in opera del prodotto finale. Per poter quindi stabilire una connessione ad un database MongoDB è necessario specificare il path del file log4j.properties. Questo file contiene le proprietà che verranno utilizzate per il sistema di logging del cluster MongoDB. Questo parametro è però opzionale, infatti se l'utente decide di non assegnare nessun valore a questo parametro, Fly genera in automatico un file log4j.properties contenenti le seguenti proprietà:
-\begin{lstlisting}[language=JAVA,caption={File log4j.proprietes generato in automatico da Fly.}, label={lst:log}]
+\begin{lstlisting}[language=FLY,caption={File log4j.proprietes generato in automatico da Fly.}, label={lst:log}]
 log4j.appender.stdout.Target=System.out
 log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
 log4j.appender.stdout=org.apache.log4j.ConsoleAppender
@@ -53,22 +53,22 @@ log4j.appender.stdout.layout.ConversionPattern=%d{yy/MM/dd HH\:mm\:ss} %p %c{2}\
 \end{lstlisting}  
 Come possiamo notare l'oggetto \verb|nosql| segue una sintassi leggermente diversa dall'oggetto \verb|sql|. I database MongoDB utilizzano un URI per definire le connessioni tra applicazioni e istanze MongoDB. La stringa di connessione URI include i seguenti componenti:
 \begin{itemize}
-    \item \verb|mongodb://| - prefisso obliggatorio per identificare che si tratta di una stringa nel formato di connessione standard;
-    \item \verb|username:password@| - se specificato, il client tenterà di autenticare l'utente nel \textbf{authSource} \cite{authSource};
-    \item \verb|host[:port]| - l'host (e il numero di porta facoltativo) in cui è in esecuzione l'istanza MongoDB;
-    \item \verb|?<options>| - opzionale. Una stringa di query che specifica le opzioni specifiche della connessione come \verb|<name>=<value>| coppie.
+    \item \textbf{mongodb://} - prefisso obliggatorio per identificare che si tratta di una stringa nel formato di connessione standard;
+    \item \textbf{username:password@} - se specificato, il client tenterà di autenticare l'utente nel \textbf{authSource} \cite{authSource};
+    \item \textbf{host[:port]} - l'host (e il numero di porta facoltativo) in cui è in esecuzione l'istanza MongoDB;
+    \item \textbf{?<options>} - opzionale. Una stringa di query che specifica le opzioni specifiche della connessione come \verb|<name>=<value>| coppie.
 \end{itemize}
-La stringa di connessione URI permette quindi di specificare le credenziali di accesso da utilizzare per stabilire una connessione ad un cluster MongoDB. Per questo motivo i parametri \verb|user| e \verb|password| non sono presenti all'interno dell'entità \verb|nosql|. Risulta invece necessario aggiungere il parametro \verb|collection| per poter specificare il nome della collezione a cui l'utente intende collegarsi. L'utilizzo della stringa di connessione URI permette all'utente di indicare l'endpoint del cluster MongoDB ovunque esso sia distribuito. Infatti, grazie a questa sintassi, l'utente può facilmente connettersi ad un database MongoDB distribuito in locale, su Azure oppure su AWS. Per quanto riguarda la connessione ad un database su Azure è possibile inoltre sostituire l'utilizzo del parametro \verb|client| con i parametri \verb|resourceGroup| e \verb|instance|. Questi due parametri consentono a Fly di ottenere in modo del tutto astratto all'utente l'endpoint del database NoSQL a cui si intende accedere. \\
-Dopo la dichiarazione della varaibile, se il database è in esecuzione su Azure e si intende utilizzare i parametri \verb|resourceGroup| e \verb|instance|, occorre utilizzare la parola chiave \verb|on| seguita dalla variabile di \verb|type = "azure"|.
+La stringa di connessione URI permette quindi di specificare le credenziali di accesso da utilizzare per stabilire una connessione ad un cluster MongoDB. Per questo motivo i parametri \verb|user| e \verb|password| non sono presenti all'interno dell'entità \verb|nosql| data la loro presenza all'interno della stringa di connessione. Risulta invece necessario aggiungere il parametro \verb|collection| per poter specificare il nome della collezione a cui l'utente intende connettersi. L'entità \verb|nosql| offre un metodo alternativo per permettere all'utente di stabilire una connessione ad un cluster MongoDB distribuito su Azure, utilizzando i parametri \verb|resource_group| e \verb|instance| in sostituzione al parametro \verb|endpoint|, come mostrato nel listato~\ref{lst:nosql:2}. Questi due parametri permettono a Fly di ottenere, in modo del tutto astratto all'utente, l'endpoint del database e di stabilire una connessione a quest'ultimo. Per poter utilizzare questi due parametri in sostituzione al parametro \verb|endpoint| occorre, inoltre, utilizzare la parola chiave \verb|on| seguita dalla variabile di \verb|type = "azure"|.
 \begin{lstlisting}[language=FLY,caption={Dichiarazione di entità nosql per la connesione ad un database tramite l'utilizzo dell'endpoint.}, label={lst:nosql:1}]
-var dbConnLocal = [type = "nosql", endpoint = "mongodb:127.0.0.1:27017", db_name = "nomeDatabase", collection = "nomeCollection"]
+var dbConnLocal = [type="nosql", endpoint="mongodb://127.0.0.1:27017", db_name="nomeDatabase", collection="nomeCollection"]
 \end{lstlisting}  
-\begin{lstlisting}[language=JAVA,caption={Dichiarazione di entità nosql per la connessione ad un database distribuito su Azure tramite l'utilizzo dei parametri resourceGroup e instance.}, label={lst:nosql:2}]
-var dbConnLocal = [type = "nosql",  resource_group = "nomeResourceGroup ", instance = "nomeIstanza",  db_name = "nomeDatabase", collection = "nomeCollection"] on cloudAz
+\begin{lstlisting}[language=FLY,caption={Dichiarazione di entità nosql per la connessione ad un database distribuito su Azure tramite l'utilizzo dei parametri resourceGroup e instance.}, label={lst:nosql:2}]
+var dbConnLocal = [type = "nosql",  resource_group="nomeResourceGroup ", instance="nomeIstanza",  db_name="nomeDatabase", collection="nomeCollection"] on cloudAz
 \end{lstlisting}  
 
 \subsection{Creazione ed esecuzione di query}
 Come già introdotto in precedenza, Fly mette a disposizione dell'utente l'entità \verb|query| per poter effettuare operazioni di inserimento, selezione, modifica e cancellazioni sui database MySQL. La dichiarazione di una variabile di tipo \verb|query| è composta, oltre dal parametro \verb|type="query"| che ne specifica appunto il tipo, dai seguenti parametri \cite{giuseppe}:
 \begin{itemize}
-    \item \textbf{query_type}: stringa rappresentante il tipo della query da eseguire (\verb|select|, \verb|insert|, \verb|update|, \verb|delete|);
+    \item \textbf{query\textunderscore type}: stringa rappresentante il tipo della query da eseguire (\verb|select|, \verb|insert|, \verb|update|, \verb|delete|);
     \item \textbf{connection}: nome della variabile di tipo 
+\end{itemize}
