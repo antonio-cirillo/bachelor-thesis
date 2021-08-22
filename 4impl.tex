@@ -66,7 +66,7 @@ var dbConnLocal = [type="nosql", endpoint="mongodb://127.0.0.1:27017", db_name="
 \begin{lstlisting}[language=FLY,caption={Dichiarazione di entità nosql per la connesione ad un database tramite l'utilizzo dell'endpoint che utilizza il file log4j.properties generato in automatico da Fly.}, label={lst:nosql:2}]
 var dbConnLocal = [type="nosql", endpoint="mongodb://127.0.0.1:27017", db_name="nomeDatabase", collection="nomeCollection"]
 \end{lstlisting}  
-\begin{lstlisting}[language=FLY,caption={Dichiarazione di entità nosql per la connessione ad un database distribuito su Azure tramite l'utilizzo dei parametri resourceGroup e instance.}, label={lst:nosql:3}]
+\begin{lstlisting}[language=FLY,caption={Dichiarazione di entità nosql per la connessione ad un database distribuito su Azure tramite l'utilizzo dei parametri resource\textunderscore group e instance.}, label={lst:nosql:3}]
 var dbConnLocal = [type="nosql",  resource_group="nomeResourceGroup ", instance="nomeIstanza", db_name="nomeDatabase", collection="nomeCollection"] on cloudAz
 \end{lstlisting} 
 
@@ -98,13 +98,13 @@ La corrispondenza delle operazioni permesse sui diversi tipi di database permett
     \item \textbf{filter}: query che seleziona l'oggetto da modificare all'interno del database;
     \item \textbf{query}: query che modifica l'oggetto selezionato.
 \end{itemize}
-Per far fronte a questa problematica risulta necessario introdurre un nuovo parametro, ovvero \verb|filter|, necessario nella dichiarazione di query di tipo \verb|update| e \verb|replace|. \\
+Per far fronte a questo aspetto risulta necessario introdurre un nuovo parametro, ovvero \verb|filter|, necessario nella dichiarazione di query di tipo \verb|update| e \verb|replace|. \\
 L'implementazione finale di queste modifiche ha fatto sì che la dichiarazione di una variabile di tipo \verb|query| sia composta dai seguenti parametri:
 \begin{itemize}
-    \item \textbf{query\textunderscore type}: stringa rappresentante il tipo della query da eseguire:
+    \item \textbf{query\textunderscore type}: stringa rappresentante il tipo di query da eseguire:
     \begin{itemize}
         \item per i database MySQL i valori ammissibili sono: \verb|select|, \verb|value| e \verb|update|;
-        \item per i database MongoDB i valori ammissibili sono: \verb|select|, \verb|insert|, \verb|update|, \verb|replace|, \verb|delete|.
+        \item per i database MongoDB i valori ammissibili sono: \verb|select|, \verb|insert|, \verb|update|, \verb|replace| e \verb|delete|.
     \end{itemize}
     \item \textbf{connection}: nome della variabile di tipo \verb|sql| o \verb|nosql| rappresentante la connessione ad un database;
     \item \textbf{filter} (solo per operazioni di \verb|update| e \verb|replace| su database MongoDB): interrogazione in linguaggio BSON per selezionare l'oggetto che si intende modificare, può essere specificata in due differenti formati:
@@ -116,10 +116,12 @@ L'implementazione finale di queste modifiche ha fatto sì che la dichiarazione d
     \begin{itemize}
         \item stringa di testo;
         \item nome di una variabile di tipo stringa;
-        \item nome di una variaibile di tipo file (solo per operazioni di \verb|insert| su database MongoDB), vedi Listato~\ref{lst:test:2}.
     \end{itemize}
-     \item \textbf{start} (solo per operazioni di \verb|insert| su database MongoDB): opzionale. Specifica la posizione all'interno del file CSV del primo elemento da inserire nel database;
-     \item \textbf{end} (solo per operazioni di \verb|insert| su database MongoDB): opzionale. Specifica la posizione all'interno del file CSV dell'ultimo elemento da inserire nel database.
+    Inoltre, per le operazioni di inserimento su database MongoDB, è possibile assegnare a questo parametro il nome di una variabile di tipo \verb|file|, vedi Listato~\ref{lst:test:2}. Questa funzionalità aggiunge la possibilità di utilizzare altri due parametri opzionali, Listato~\ref{lst:test:3}:
+    \begin{itemize}
+        \item \textbf{start}: specifica la posizione all'interno del file CSV del primo elemento da inserire nel database;
+        \item \textbf{end}: specifica la posizione all'interno del file CSV dell'ultimo elemento da inserire nel database.
+    \end{itemize}
 \end{itemize}
 Nell'introduzione del capitolo abbiamo visto come Fly supporta anche la manipolazione di dati provenienti da file strutturati come fogli Excel e file CSV. In molti casi d'uso la manipolazione dei dati comporta la necessità di salvare dati provenienti da file strutturati all'interno di un database. Per questo motivo Fly permette di specificare all'interno del parametro \verb|query| il nome di una variabile di tipo file, come mostrato nel Listato~\ref{lst:test:2}. Questa funzionalità permette con una semplice riga di codice di prelevare i dati presenti all'interno di un file CSV e inserirli all'interno di una collezione specifica di un database MongoDB. Inoltre, è possibile specificare la posizione di partenza e di fine degli elementi da prelevare all'interno di un file CSV, tramite l'utilizzo dei parametri opzionali \verb|start| e \verb|end|, come mostrato nel Listato~\ref{lst:test:3}. \\
 \begin{lstlisting}[language=FLY,caption={Dichiarazione di entità query per l'inserimento degli elementi provenienti da un file CSV.}, label={lst:test:2}]
@@ -159,7 +161,7 @@ Applicare questa strategia anche per i database MongoDB risulta non essere effic
 	"temperaturaMin": 18
 }
 \end{lstlisting}
-I tre elementi sopra riportati seguono una struttura non omogenea. In particolare però l'elemento \verb|"id": 2| e l'elemento \verb|"id": 3| sono composti dagli stessi elementi (id, luogo, temperaturaMax e temperaturaMin). Per questo motivo risulta impossibile unire i tre elementi all'interno di una singola tabella, però è possibile unire l'elemento \verb|"id": 2| e l'elemento \verb|"id": 3| all'interno della stessa tabella, e isolare l'elemento \verb|"id": 1| all'interno di un'altra tabella, come riportato di seguito. 
+È facile notare come i tre elementi non seguono la stessa struttura. In particolare però l'elemento \verb|"id": 2| e l'elemento \verb|"id": 3| sono composti dagli stessi parametri (\verb|id|, \verb|luogo|, \verb|temperaturaMax| e \verb|temperaturaMin|). Da quest'osservazione risulta quindi impossibile unire i tre elementi all'interno di una singola tabella, ma risulta invece possibile unire l'elemento \verb|"id": 2| e l'elemento \verb|"id": 3| all'interno della stessa tabella, e isolare l'elemento \verb|"id": 1| all'interno di un'altra tabella, come riportato di seguito. 
 \begin{center}
 \begin{tabular}{||c c c c||} 
  \hline
@@ -184,7 +186,7 @@ Quest'analisi ha portato all'implementazione del metodo \verb|__generateTable-| 
 \begin{lstlisting}[language=FLY,caption={Stampa a schermo di tutte le tabelle ottenute tramite l'esecuzione di una query di selezione su un database MongoDB.}, label={lst:tabelle:2}]
 var database = [type="nosql", endpoint="mongodb://127.0.0.1:27017", database="nomeDatabase", collection="nomeCollection"]
 
-var selezione = [type="query", query_type="select", connection=database, query="{ }"]
+var selezione = [type="query", query_type="select", connection=database, query="Sintassi BSON"]
 		
 var listaTabelle = selezione.execute()
 	
@@ -193,29 +195,38 @@ for tabella in listaTabelle {
 }
 \end{lstlisting}
 Tramite l'utilizzo di un \verb|for|, come mostrato al rigo sette, l'utente può iterare il risultato ottenuto dall'operazione di selezione. In questo modo lo sviluppatore può interagire con le varie tabelle e quindi con gli elementi al proprio interno. \\
-Anche l'operazione di eliminazione restituisce un risultato dopo la sua esecuzione, ovvero un numero intero pari al numero di oggetti eliminati.
+Oltre all'operazione di selezione, anche l'operazione di eliminazione restituisce un risultato dopo la sua esecuzione, ovvero un numero intero pari al numero di oggetti eliminati.
 \begin{lstlisting}[language=FLY,caption={Stampa a schermo degli elementi eliminati da un'operazione di eliminazione.}, label={lst:tabelle:3}]
 var database = [type="nosql", endpoint="mongodb://127.0.0.1:27017", database="nomeDatabase", collection="nomeCollection"]
 
-var eliminazione = [type="query", query_type="delete", connection=database, query="{ }"]
+var eliminazione = [type="query", query_type="delete", connection=database, query="Sintassi BSON"]
 		
 var oggettiEliminati = eliminazione.execute()
 	
 println "Sono stati rimossi " + oggettiEliminati + " oggetti."
 \end{lstlisting}
+Le operazioni di \verb|insert|, \verb|update| e \verb|replace| non restituiscono nessun risultato all'interno del programma ma solo un effetto all'interno del database.
 
 \section{Generazione codice Java}
-Il programma Java generato da compilatore Fly utilizza il driver ufficiale \textit{MongoDB Java} che consente alle applicazioni Java di connettersi e lavorare con i dati in MongoDB \cite{mongodbjava}. Per permettere al programma Java di utilizzare la libreria ufficiale di MongoDB, è stato inserito la dipendenza all'interno del file POM di Maven. \\
-Nel Listato~\ref{lst:java:1} è mostrato il codice generato alla dichiarazione di una variaibile di tipo \verb|nosql|. Come specificato in precedenza esso è utilizzabile indipendentemente dall'ambiente di esecuzione del database in quanto è sufficiente conoscere l'endpoint per accedervi.
+Il programma Java generato dal compilatore Fly utilizza il driver ufficiale \textit{MongoDB Java} \cite{mongodbjava} che consente alle applicazioni Java di connettersi e lavorare con i dati in MongoDB. Per permettere al programma Java di utilizzare la libreria ufficiale di MongoDB, è stata inserita la dipendenza alla libreria all'interno del file POM di Maven. \\
+Nel Listato~\ref{lst:java:1} è mostrato il codice generato alla dichiarazione di una variaibile di tipo \verb|nosql|. Come specificato in precedenza, esso è utilizzabile indipendentemente dall'ambiente di esecuzione del database in quanto è sufficiente conoscere l'endpoint per accedervi.
 \begin{lstlisting}[language=Java,caption={Codice Java generato per la variaibile di tipo nosql.}, label={lst:java:1}]
 [...]
 PropertyConfigurator.configure("log4j.properties");
 
-MongoClient dbConnClient = new MongoClient(new MongoClientURI("mongodb://127.0.0.1:27017"));
+MongoClient dbConnClient = new MongoClient(new MongoClientURI("endpointDatabase"));
 MongoCollection <Document> dbConn = dbConnClient.getDatabase("nomeDatabase").getCollection("nomeCollection");
 \end{lstlisting}
-La generazione del codice per un'entità di tipo \verb|query| varia in base al tipo di operazione che si intende eseguire. Nel capitolo precedente abbiamo visto come la sintassi BSON utilizzata da MongoDB non distingue il tipo di operazione da effettuare all'interno del database, infatti, la libreria \textit{MongoDB Java} offre all'utente un set di metodi con il quale è possibile effettuare le diverse operazioni. \\
-Il Listato~\ref{lst:java:2} mostra il codice Java generato dalla dichiarazione ed esecuzione di una query di tipo \verb|select|. Nella fase di dichiarazione dell'entità \verb|query| viene generato all'interno del codice Java la variabile di tipo \verb|BsonDocument|. Questo oggetto rappresenta la sintassi BSON che verrà utilizzata durante l'esecuzione della query. Il metodo \verb|execute()| sull'entità \verb|query| genera invece il terzo rigo di codice. Viene eseguito il metodo \verb|find()| che permette di effettuare operazioni di tipo \verb|select| sul database, utilizzando la sintassi BSON specificata in precedenza. Il risultato di questa esecuzione viene poi passato al metodo \verb|__generateTableFromNoSQLQuery| che si occupa di compattare il set di dati ottenuto dalla query in un insieme di tabelle.
+Nei capitoli successivi vedremo come l'interazione con un cluster MongoDB all'interno dei linguaggi JavaScript e Python risulta essere omogenea all'interazione tramite Java. Questo aspetto è dovuto dall'utilizzo della libreria ufficiale di MongoDB all'interno di tutti e tre i linguaggi. \\
+In Java, JavaScript e Python le interrogazioni sul database sono state implementate tramite l'utilizzo dei seguenti metodi presenti all'interno della libreria ufficiale di MongoDB: 
+\begin{itemize}
+    \item \verb|find()|: metodo utilizzato per effettuare interrogazioni di tipo \verb|select|;
+    \item \verb|insertMany()|: metodo utilizzato per effettuare interrogazioni di tipo \verb|insert|;
+    \item \verb|updateMany()|: metodo utilizzato per effettuare interrogazioni di tipo \verb|update|;
+    \item \verb|replaceOne()|: metodo utilizzato per effettuare interrogazioni di tipo \verb|replace|;
+    \item \verb|deleteMany()|: metodo utilizzato per effettuare interrogazioni di tipo \verb|delete|.
+\end{itemize}
+Il Listato~\ref{lst:java:2} mostra il codice Java generato dalla dichiarazione ed esecuzione di una query di tipo \verb|select|. Nella fase di dichiarazione dell'entità \verb|query| viene generato all'interno del codice Java la variabile di tipo \verb|BsonDocument|. Questo oggetto rappresenta la sintassi BSON che verrà utilizzata durante l'esecuzione della query. L'esecuzione della query viene effettuata tramite il metodo \verb|find()| e l'oggetto \verb|BsonDocument| come argomento. Il risultato di questa esecuzione viene poi passato al metodo \verb|__generateTableFromNoSQLQuery| che si occupa di compattare il set di dati ottenuto dalla query in un insieme di tabelle.
 \begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo query per l'esecuzione di un'interrogazione di selezione.}, label={lst:java:2}]
 BsonDocument selezione = Document.parse("{ }");
 
@@ -235,11 +246,10 @@ Il codice Java generato per l'esecuzione di un inserimento tramite una variabile
     \item casting della sintassi BSON dal tipo \verb|String| al tipo \verb|Document|, necessario per l'utilizzo del metodo \verb|insertMany()|;
     \item inserimento degli oggetti \verb|Document| all'interno del database.
 \end{itemize}
-La prima fase dell'inserimento, ovvero il casting, è stata realizzata grazie al supporto della libreria \textit{JSON}. Analogamente alla dipendenza per la libreria \textit{MongoDB Java}, anche la dipendenza relativa alla libreria \textit{JSON} è stata inserita all'interno del file POM di Maven. Una volta terminata la fase di casting, grazie all'utilizzo del metodo \verb|insertMany()|, tutti gli oggetti \verb|Document| vengono inseriti all'interno del database.
+La prima fase dell'inserimento, ovvero il casting, è stata realizzata grazie al supporto della libreria \textit{JSON} \cite{json}. Analogamente alla dipendenza per la libreria \textit{MongoDB Java}, anche la dipendenza relativa alla libreria \textit{JSON} è stata inserita all'interno del file POM di Maven. Una volta terminata la fase di casting, grazie all'utilizzo del metodo \verb|insertMany()|, tutti gli oggetti \verb|Document| vengono inseriti all'interno del database.
 \begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo query per l'esecuzione di un'interrogazione di inserimento che utilizza una variabile di tipo stringa.}, label={lst:java:3}]
-String stringa = "{\"id\": \"1\", \"nome\": \"Antonio\", \"cognome\": \"Cirillo\", \"anni\": \"21\"}"
-if(stringa.charAt(0) != "[")
-	stringa = "[" + stringa + "]";
+String stringa = "Sintassi BSON"
+[...]
 
 org.json.JSONArray array = new org.json.JSONArray(stringa);
 List <Document> inserimento = new ArrayList <Document> ();
@@ -251,11 +261,11 @@ dbConn.insertMany(inserimento);
 \end{lstlisting}
 Il codice Java generato per l'esecuzione di un inserimento tramite un'entità di tipo \verb|file| comprende tre fasi:
 \begin{itemize}
-    \item lettura degli elementi all'interno del file CSV;
-    \item casting degli elementi letti dal formato \verb|String| al formato \verb|Document|;
+    \item lettura dei dati presenti nel file CSV;
+    \item casting dei dati letti dal formato \verb|String[]| al formato \verb|Document|;
     \item inserimento degli oggetti \verb|Document| all'interno del database.
 \end{itemize}
-Gli oggetti presenti all'interno del file CSV vengono letti e memorizzati tramite l'utilizzo dell'oggetto \verb|CSVReader| della libreria \textit{OpenCSV}. Come per le altre, la dipendenza alla libreria \textit{OpenCSV} è stata aggiunta al file POM di Maven. Una volta letti i vari oggetti contenuti all'interno del file CSV desiderato, si passa alla seconda fase dell'algoritmo, ovvero convertire i vari oggetti dal formato \verb|String[]| al formato \verb|Document|, in modo da poterli inserire tramite il metodo \verb|insertMany()| nella terza e ultima fase dell'algoritmo.
+Gli oggetti presenti all'interno del file CSV vengono letti e memorizzati tramite l'utilizzo dell'oggetto \verb|CSVReader| della libreria \textit{OpenCSV} \cite{opencsv}. Come per le altre, la dipendenza alla libreria \textit{OpenCSV} è stata aggiunta al file POM di Maven. Una volta letti i vari oggetti contenuti all'interno del file CSV desiderato, si passa alla seconda fase dell'algoritmo, ovvero convertire i vari oggetti dal formato \verb|String[]| al formato \verb|Document|, in modo da poterli inserire tramite il metodo \verb|insertMany()| nella terza e ultima fase dell'algoritmo.
 \begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo query, priva dei parametri start ed end, per l'esecuzione di un'interrogazione di inserimento che utilizza una variabile di tipo file.}, label={lst:java:4}]
 List <Document> oggettiDaInserire = new ArrayList <Document> ();
 try (CSVReader reader = new CSVReader(new FileReader(fileCSV))) {
@@ -268,7 +278,7 @@ try (CSVReader reader = new CSVReader(new FileReader(fileCSV))) {
 
 dbConn.insertMany(oggettiDaInserire);
 \end{lstlisting}
-Il codice Java generato per l'esecuzione di un inserimento tramite un'entità di tipo \verb|file| con la specifica delle posizioni di inizio e fine degli oggetti da memorizzare, differisce da quello precedente solo nella dichiarazione del \verb|for| al rigo cinque.
+Il codice Java generato per l'esecuzione di un inserimento tramite un'entità di tipo \verb|file| con la specifica delle posizioni di inizio e fine degli oggetti da memorizzare differisce da quello precedente solo nella dichiarazione del \verb|for| al rigo cinque.
 \begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo query per l'esecuzione di un'interrogazione di inserimento che utilizza una variabile di tipo file.}, label={lst:java:5}]
 List <Document> oggettiDaInserire = new ArrayList <Document> ();
 try (CSVReader reader = new CSVReader(new FileReader(fileCSV))) {
@@ -281,27 +291,27 @@ try (CSVReader reader = new CSVReader(new FileReader(fileCSV))) {
 
 dbConn.insertMany(oggettiDaInserire);
 \end{lstlisting}
-Per le operazioni di \verb|update| e \verb|replace| il codice Java generato è praticamente uguale, differisce solo nel metodo utilizzato per eseguire l'operazione richiesta, vedi rigo del Listato~\ref{lst:java:6} e Listato~\ref{lst:java:7}. Il codice generato permette di convertire le stringhe contenenti la sintassi BSON per la selezione e l'aggiornamento dell'oggetto in oggetti \verb|BsonDocument|. Successivamente, in base al tipo di operazione, viene eseguito il metodo corrispondente per eseguire l'operazione desiderata (\verb|updateMany()| per query di \verb|update| e \verb|replaceOne()| per query di \verb|replace|).
+Per le operazioni di \verb|update| e \verb|replace| il codice Java generato è praticamente uguale, differisce solo nel metodo utilizzato per eseguire l'operazione richiesta, vedi rigo 5 del Listato~\ref{lst:java:6} e Listato~\ref{lst:java:7}. Il codice generato permette di convertire le stringhe, contenenti la sintassi BSON per la selezione e l'aggiornamento dell'oggetto, in oggetti \verb|BsonDocument|. Successivamente, in base al tipo di operazione, viene eseguito il metodo \verb|updateMany()| per query di \verb|update| o \verb|replaceOne()| per query di \verb|replace|.
 \begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo query per l'esecuzione di un'interrogazione di update.}, label={lst:java:6}]
-BsonDocument query_filter = Document.parse(queryDiSelezione).toBsonDocument();
+BsonDocument filter = Document.parse("Sintassi BSON").toBsonDocument();
 
-BsonDocument query = Document.parse(queryDiAggiornamento).toBsonDocument();
+BsonDocument query = Document.parse("Sintassi BSON").toBsonDocument();
 
-dbConn.updateMany(query_filter, query);
+dbConn.updateMany(filter, query);
 \end{lstlisting}
 \begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo query per l'esecuzione di un'interrogazione di replace.}, label={lst:java:7}]
-BsonDocument query_filter = Document.parse(queryDiSelezione).toBsonDocument();
+BsonDocument filter = Document.parse("Sintassi BSON").toBsonDocument();
 
-BsonDocument query = Document.parse(queryDireplace).toBsonDocument();
+BsonDocument query = Document.parse("Sintassi BSON").toBsonDocument();
 
-dbConn.replaceOne(query_filter, query);
+dbConn.replaceOne(filter, query);
 \end{lstlisting}
 
 \section{Genarazione codice JavaScript}
 L'implementazione dell'interazione con i database MongoDB all'interno di JavaScript sfrutta le librerie:
 \begin{itemize}
-    \item \textit{mongodb}, libreria ufficiale di MongoDB per il linguaggio JavaScript;
-    \item \textit{csv-parse}, libreria analogo alla libreria \textit{OpenCSV} utilizzata per generare il codice Java.
+    \item \textit{mongodb} \cite{mongodbnode}, libreria ufficiale di MongoDB per il linguaggio JavaScript;
+    \item \textit{csv-parse} \cite{csvparse}, libreria che permettere di leggere, creare e modificare file CSV.
 \end{itemize}
 Anche in questo caso vale il concetto per cui l'interazione con un cluster MongoDB non varia in base alla sua distribuzione. Il Listato~\ref{lst:js:1} mostra il codice JavaScript generato dalla dichiarazione di un'entità \verb|nosql|.
 \begin{lstlisting}[language=Java,caption={Codice JavaScript generato per la variaibile di tipo nosql.}, label={lst:js:1}]
@@ -310,27 +320,108 @@ const dbConnClient = new mongodb.MongoClient(
 	{ useUnifiedTopology: true }
 );
 
-await __dbConnClient.conect();
-const dbConn = __dbConnClient.db("nomeDatabase").collection("nomeCollection");
+await dbConnClient.connect();
+const dbConn = dbConnClient.db("nomeDatabase").collection("nomeCollection");
 \end{lstlisting}
-La generazione del codice JavaScript relativo alle diverse tipologie di query segue la stessa meccanica della generazione del codice Java. Questa caratteristica è data dal funzionamento analogo delle librerie utilizzate per interagire con un cluster MongoDB.
+Il Listato~\ref{lst:js:2} mostra il codice JavaScript generato dalla dichiarazione ed esecuzione di una query di tipo \verb|select|. Alla dichiarazione di un'entità \verb|query| viene generato all'interno del codice JavaScript una variabile contenente il riferimento ad un funzione. All'interno di questa funzione viene eseguita sia l'interrogazione sul database sia la partizione e la restituzione dei risultati in una lista di tabelle.
 \begin{lstlisting}[language=Java,caption={Codice JavaScript generato per la variaibile di tipo query per l'esecuzione di un'interrogazione di selezione.}, label={lst:js:2}]
 const selezione = async () => {
 	
-	let features = [];
-	let oggetti = [];
+	[...]
 		
 	await nosql.find(JSON.parse("{ }")).forEach((oggetto) => {
 		[...]							
 	});
 		
-	let tables = [];
+	let tabelle = [];
 	
 	[...]		
 				
-	return listaTabelle;
+	return tabelle;
 }
 	
-var risultato = (await selezione());
+var listaTabelle = (await selezione());
 \end{lstlisting}
- 
+L'operazione di \verb|select|
+Il codice JavaScript generato dalla dichiarazione ed esecuzione di una query di tipo \verb|insert|, come per la generazione del codice Java, varia in base al valore assegnato al parametro \verb|query|, vedi Listato~\ref{lst:js:3} e ~\ref{lst:js:4}.
+\begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo query per l’esecuzione di un’interrogazione di inserimento che utilizza una variabile di tipo stringa.}, label={lst:js:3}]
+let inserimento = JSON.parse("Sintassi BSON");
+
+await dbConn.insertMany(inserimento);
+\end{lstlisting}
+\begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo query per l’esecuzione di un’interrogazione di inserimento che utilizza una variabile di tipo file.}, label={lst:js:4}]
+const oggettiDaInserire = async() => {
+	
+	[...]
+	
+	return oggetti;
+}
+
+await dbConn.insertMany((await oggettiDaInserire()));
+\end{lstlisting}
+Anche il codice JavaScript generato dalla dichiarazione di operazioni di tipo \verb|update|, \verb|replace| e \verb|delete| non risulta differente dal codice Java, vedi Listato~\ref{lst:js:5}, \ref{lst:js:6} e \ref{lst:js:7}.
+ \begin{lstlisting}[language=Java,caption={Codice JavaScript generato per la variabile di tipo query per l’esecuzione di un’interrogazione di update.}, label={lst:js:5}]
+const filter = JSON.parse("Sintassi BSON");
+
+const query = JSON.parse("Sintassi BSON");
+
+await dbConn.updateMany(filter, query);
+\end{lstlisting}\begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo query per l’esecuzione di un’interrogazione di replace.}, label={lst:js:6}]
+const filter = JSON.parse("Sintassi BSON");
+
+const query = JSON.parse("Sintassi BSON");
+
+await dbConn.replaceOne(filter, query);
+\end{lstlisting}\begin{lstlisting}[language=Java,caption={Codice JavaScript generato per la variabile di tipo query per l’esecuzione di un’interrogazione di delete.}, label={lst:js:7}]
+const elimina = JSON.parse("Sintassi BSON");
+
+const oggettiEliminati = (await dbConn.deleteMany(elimina)).deletedCount;
+\end{lstlisting}
+
+\subsection{Generazione codice Python}
+Le funzioni Fly eseguite nel linguaggio Python utilizzano la libreria ufficiale \textbf{PyMongo} per accedere ed interagire con i database MongoDB. Analogamente a Java e JavaScript l'interazione con database su Cloud funziona allo stesso modo rispetto a quella con database locali, Listato~\ref{lst:py:1}.
+\begin{lstlisting}[language=Python,caption={Codice Python generato per la variaibile di tipo nosql.}, label={lst:py:1}]
+from pymongo import MongoClient
+[...]
+
+dbConnClient = MongoClient('endpointDatabase')
+dbConnDatabase = dbConnClient['nomeDatabase']
+dbConn = dbConnDatabase['nomeCollection']
+\end{lstlisting}
+Anche la generazione del codice Python relativo alle diverse tipologie di query segue la stessa meccanica della generazione del codice Java e JavaScript, dato l'utilizzo della libreria ufficiale per python di MongoDB. \\
+Il Listato~\ref{lst:py:2} mostra il codice Python generato dalla dichiarazione ed esecuzione di una query di tipo \verb|select|. Il codice generato segue la meccanica utilizzata in JavaScript, ovvero la dichiarazione di una funzione contenente le istruzioni per selezionare i dati all'interno del database e partizionarli all'interno di una lista di tabelle.
+\begin{lstlisting}[language=Python,caption={Codice Python generato per la variaibile di tipo query per l’esecuzione di un’interrogazione di selezione.}, label={lst:py:2}]
+def __selezione__():
+	elementi = dbConn.find(json.loads("Sintassi BSON")
+	[...]
+	
+	tabelle = []
+	[...]
+	return tabelle
+
+listaTabelle = __selezione__()
+\end{lstlisting}
+Il codice Python generato dalla dichiarazione ed esecuzione di una query di tipo \verb|insert|, come per la generazione del codice Java e JavaScript, varia in base al valore assegnato al parametro query, vedi Listato~\ref{lst:py:3} e \ref{lst:py:4}.
+\begin{lstlisting}[language=Python,caption={Codice Python generato per la variaibile di tipo query per l’esecuzione di un’interrogazione di selezione.}, label={lst:py:3}]
+
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python,caption={Codice Python generato per la variaibile di tipo query per l’esecuzione di un’interrogazione di selezione.}, label={lst:py:4}]
+
+\end{lstlisting}
+
+Anche il codice Python generato dalla dichiarazione ed esecuzione di operazioni di tipo \verb|update|, \verb|replace| e \verb|delete| risulta essere omogeno al codice Java e JavaScript, vedi Listato~\ref{lst:py:5}, \ref{lst:py:6} e \ref{lst:py:7}.
+
+\begin{lstlisting}[language=Python,caption={Codice Python generato per la variaibile di tipo query per l’esecuzione di un’interrogazione di selezione.}, label={lst:py:5}]
+
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python,caption={Codice Python generato per la variaibile di tipo query per l’esecuzione di un’interrogazione di selezione.}, label={lst:py:6}]
+
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python,caption={Codice Python generato per la variaibile di tipo query per l’esecuzione di un’interrogazione di selezione.}, label={lst:py:7}]
+
+\end{lstlisting}
+
+\subsection{Caso d'uso}
