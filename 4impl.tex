@@ -315,9 +315,9 @@ Di seguito viene riportato il Listato~\ref{lst:pom} contenete tutte le dipendenz
 	<version>5.3</version>
 </dependency>
 <dependency>
-    	<groupId>org.json</groupId>
-    	<artifactId>json</artifactId>
-    	<version>20210307</version>
+	<groupId>org.json</groupId>
+	<artifactId>json</artifactId>
+	<version>20210307</version>
 </dependency>
 \end{lstlisting}
 \section{Genarazione codice JavaScript}
@@ -396,9 +396,9 @@ Le funzioni Fly eseguite nel linguaggio Python utilizzano la libreria ufficiale 
 from pymongo import MongoClient
 [...]
 
-dbConnClient = MongoClient('endpointDatabase')
-dbConnDatabase = dbConnClient['nomeDatabase']
-dbConn = dbConnDatabase['nomeCollection']
+dbConnClient = MongoClient("endpointDatabase")
+dbConnDatabase = dbConnClient["nomeDatabase"]
+dbConn = dbConnDatabase["nomeCollection"]
 \end{lstlisting}
 Anche la generazione del codice Python relativo alle diverse tipologie di query segue la stessa meccanica della generazione del codice Java e JavaScript, dato l'utilizzo della libreria ufficiale per python di MongoDB. \\
 Il Listato~\ref{lst:py:2} mostra il codice Python generato dalla dichiarazione ed esecuzione di una query di tipo \verb|select|. Come nel linguaggio JavaScript, viene generata la dichiarazione di una funzione contenente le istruzioni per selezionare i dati all'interno del database e partizionarli all'interno di una lista di tabelle.
@@ -413,27 +413,79 @@ def __selezione__():
 
 listaTabelle = __selezione__()
 \end{lstlisting}
-Il codice Python generato dalla dichiarazione ed esecuzione di una query di tipo \verb|insert|, come per la generazione del codice Java e JavaScript, varia in base al valore assegnato al parametro query, vedi Listato~\ref{lst:py:3} e Listato~\ref{lst:py:4}.
+Il codice Python generato dalla dichiarazione ed esecuzione di una query di tipo \verb|insert|, come per la generazione del codice Java e JavaScript, varia in base al valore assegnato al parametro \textbf{query}, vedi Listato~\ref{lst:py:3} e Listato~\ref{lst:py:4}.
 \begin{lstlisting}[language=Python,caption={Codice Python generato per la variabile di tipo query per l’esecuzione di un’interrogazione di inserimento che utilizza una variabile di tipo stringa.}, label={lst:py:3}]
+inserimento = json.loads("Sintassi BSON")
 
+dbConn.insert_many(inserimento)
 \end{lstlisting}
-
+In Python la lettura degli oggetti contenuti all'interno di un file CSV viene effettuata tramite l'utilizzo della libreria \textit{pandas} \cite{pandas}, libreria già presente all'interno del compilatore Fly.
 \begin{lstlisting}[language=Python,caption={Codice Python generato per la variabile di tipo query per l’esecuzione di un’interrogazione di inserimento che utilizza una variabile di tipo file.}, label={lst:py:4}]
+oggettiDaInserire = pandas.read_csv([...])
 
+dbConn.insert_many(oggettiDaInserire)
 \end{lstlisting}
-
 Anche il codice Python generato dalla dichiarazione ed esecuzione di operazioni di tipo \verb|update|, \verb|replace| e \verb|delete| risulta essere omogeno al codice Java e JavaScript, vedi Listato~\ref{lst:py:5}, Listato~\ref{lst:py:6} e Listato~\ref{lst:py:7}.
-
 \begin{lstlisting}[language=Python,caption={Codice Python generato per la variaibile di tipo query per l’esecuzione di un’interrogazione di update.}, label={lst:py:5}]
+filter = json.loads("Sintassi BSON")
 
+query = json.loads("Sintassi BSON")
+
+dbConn.update_many(filter, query)
 \end{lstlisting}
-
 \begin{lstlisting}[language=Python,caption={Codice Python generato per la variaibile di tipo query per l’esecuzione di un’interrogazione di replace.}, label={lst:py:6}]
+filter = json.loads("Sintassi BSON")
 
+query = json.loads("Sintassi BSON")
+
+dbConn.replace_one(filter, query)
 \end{lstlisting}
-
 \begin{lstlisting}[language=Python,caption={Codice Python generato per la variaibile di tipo query per l’esecuzione di un’interrogazione di delete.}, label={lst:py:7}]
+elimina = json.loads("Sintassi BSON")
 
+oggettiEliminati = dbConn.delete_many(elimina).deleted_count
 \end{lstlisting}
 
 \subsection{Caso d'uso}
+Il Listato~\ref{lst:usecase:1} mostra un esempio di interazione con un database MongoDB. L'esempio si basa sulla memorizzazione degli elementi di un file CSV all'interno di un cluster MongoDB distribuito in locale. Questa fase iniziale viene eseguita in locale. Successivamente tramite una funzione Fly tradotta in linguaggio JavaScript ed eseguita mediante i servizi FaaS di AWS, vengono eliminati tutti gli elementi all'interno della collezione che hanno come parametro \verb|temperatura| un valore maggiore di 10. \\
+Il funzionamento del programma viene diviso in due funzioni: \verb|inserimentoOg-| \verb|getti()| e \verb|eliminaTemperatureElevate()|. \\
+La funzione \verb|inserimentoOggetti()| comprende le istruzioni per: 
+\begin{itemize}
+    \item stabilire una connessione al database MongoDB tramite l'utilizzo dell'entità \verb|nosql| al rigo sei;
+    \item accedere al file CSV mediante l'utilizzo dell'entità \verb|file| al rigo nove;
+    \item inserire gli elementi contenuti nel file CSV all'interno della collezione del database MongoDB tramite la dichiarazione, rigo undici, ed esecuzione, rigo dodici, dell'entità \verb|query|.
+\end{itemize}
+Essa viene eseguita in locale tramite la parola chiave \verb|fly| e l'ambiente di esecuzione \verb|local|, vedi rigo quindici. \\
+La funzione \verb|eliminaTemperatureElevate()| comprende le istruzioni per:
+\begin{itemize}
+    \item stabilire una connessione al database MongoDB tramite l'utilizzo dell'entità \verb|nosql| al rigo diciotto;
+    \item eliminare gli oggetti contenuti all'interno della collezione tramite la dichiarazione, rigo venti, ed esecuzione, rigo ventuno, dell'entità \verb|query|.
+\end{itemize}
+Essa viene eseguita sul servizio FaaS di AWS tramite la parola chiave \verb|fly| e l'ambiente di esecuzione \verb|local|, vedi rigo venticinque.
+\begin{lstlisting}[language=FLY,caption={Codice Python generato per la variaibile di tipo query per l’esecuzione di un’interrogazione di delete.}, label={lst:usecase:1}]
+var local = [type="smp", nthread=4]
+
+var aws = [type="aws", profile="default", access_id_key="accessIdKey", secret_access_key="secretAccessKey", region="eu-west-2", language="nodejs12.x", nthread=4, memory=256, seconds=300]
+
+func inserimentoOggetti() {
+	var dbConn = [type="nosql", endpoint="endpointLocale", database="nomeDatabase", collection="nomeCollection"]
+
+	var pathDelFile = "pathDelFileCSV"
+	var fileCSV = [type="file", path=pathDelFile]
+
+	var inserisci = [type="query", query_type="insert", connection=dbConn, query=fileCSV]
+	inserisci.execute()
+}
+
+fly inserimentoOggetti in [0:1] on local
+
+func eliminaTemperatureElevate() {
+	var dbConn = [type="nosql", endpoint="endpointLocale", database="nomeDatabase", collection="nomeCollection"]
+
+	var elimina = [type="query", query_type="delete", connection=dbConn, query="{\"temperatura\": { $gt: 10 }}"]
+	elimina.execute()
+
+}
+
+fly eliminaTemperatureElevate in [0:1] on AWS
+\end{lstlisting}
