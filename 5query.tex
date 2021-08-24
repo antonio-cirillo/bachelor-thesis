@@ -1,1 +1,199 @@
-Il concetto di query distribuite permette di trarre il meglio dal paradigma del multi-cloud. Una query distribuita è un'interrogazione per l'acquisizione di dati memorizzati su diverse istanze di database. L'utilizzo delle query distribuite permette all'utente di effettuare un'operazioni di selezione, inserimento, modifica e eliminazione su più database contemporaneamente. L'utente che utilizza questo tipo di query è consapevole di interagire con più sorgenti dati ma il risultato che ottiene e la sintassi che utilizza sono analoghi a quelli di una classica interrogazione lanciata su un singolo database. Quest'idea è però un'astrazione di quello che è in realtà il comportamento delle query distribuite. L'esecuzione di una query distribuita su \textit{n} sorgenti non porta all'esecuzione di una singola query in contemporanea su tutte le \textit{n} sorgenti, ma vengono eseguite in successione \textit{n} interrogazioni distinte per ogni singola sorgente. I risultati derivanti da queste \textit{n} interrogazioni vengono poi raggrupati e restituiti all'utente come singolo risultato. \\
+I grandi vantaggi economici derivanti dal paradigma del Cloud Computing ha portato molte aziende a partizionare i dati contenuti in un singolo database in più database, causando però un aumento della complessità per la gestione dei dati. La neccesità di manipolare dati provenienti da diversi database ha portato alla nascita delle \textbf{query distribuite}. Una query distribuita è un'interrogazione per l'acquisizione di dati memorizzati su diverse istanze di database. Esse permettono all'utente di effettuare operazioni di selezione, inserimento, modifica e eliminazione su più database contemporaneamente. L'utente che utilizza questo tipo di query è consapevole di interagire con più sorgenti dati ma il risultato che ottiene e la sintassi che utilizza sono analoghi a quelli di una classica interrogazione lanciata su un singolo database. Quest'idea è però un'astrazione di quello che è in realtà il comportamento delle query distribuite. L'esecuzione di una query distribuita su \textit{n} sorgenti  scatena l'esecuzione sequenziale di \textit{n} interrogazioni distinte su ogni singola sorgente. I risultati derivanti da queste \textit{n} interrogazioni vengono poi raggrupati e restituiti all'utente come singolo risultato. \\
+
+\section{Obiettivi}
+L'obiettivo all'interno di Fly è di permettere all'utente di utilizzare una normale query BSON per accedere a diverse sorgenti dati, siano esse locali o in Cloud. L'utilizzo delle query distribuite all'interno di Fly deve garantire un livello di astrazione tale da rendere il comportamento di una query distribuita omogeneo al comportamento di una semplice query su un singolo database, per questo motivo l'interazione coi diversi database e il raggruppamento del risultato verrà totalmente astratto all'utente.
+
+\section{Implementazione}
+L'implementazione delle query distribuite all'interno di Fly ha portato all'introduzione dell'entità \verb|distributed-query|. I parametri che compongono questa entità sono analoghi ai parametri dell'entità \verb|query| eccetto per l'aggiunta del parametro a numero variabile \verb|source_i| che identifica la \textit{i}-esima risorsa che verrà interrogata. La dichiarazione di una variabile di tipo \verb|distributed-query| è composta quindi dai seguenti parametri:
+\begin{itemize}
+    \item \textbf{query\textunderscore type}: stringa rappresentante il tipo di query da eseguire (\verb|select|, \verb|insert|, \verb|update|, \verb|replace| e \verb|delete|);
+    \item \textbf{filter} (solo per operazioni di \verb|update| e \verb|replace|: interrogazione in linguaggio BSON per selezionare l'oggetto che si intende modificare, può essere specificata in due differenti formati:
+    \begin{itemize}
+        \item stringa di testo;
+        \item nome di una variabile di tipo stringa.
+    \end{itemize}
+    \item \textbf{query}: interrogazione in linguaggio BSON da eseguire, può essere specificata in due differenti formati:
+    \begin{itemize}
+         \item stringa di testo;
+         \item nome di una variabile di tipo stringa.
+    \end{itemize}
+    Come per l'entità \verb|query|, per le operazioni di inserimento, è possibile assegnare a questo parametro il nome di una variabile di tipo \verb|file|;
+    \item \textbf{source\textunderscore i}: nome della \textit{i}-esima variabile di tipo \verb|nosql| rappresentante la connessione ad un database.
+\end{itemize}
+Il Listato~\ref{lst:dquery} mostra un'esempio di dichiarazione di un'entità \verb|distributed-query| che permette di selezionare i dati presenti in tre diversi database.
+\begin{lstlisting}[language=FLY,caption={Dichiarazione di query distribuita di tipo selezione su tre database diversi.}, label={lst:dquery}]
+var selezione = [type="distributed-query", query_type="select", query="Sintassi BSON", source_1=primoDatabase, source_2=secondoDatabase, source_3=terzoDatabase]
+\end{lstlisting}
+
+\section{Generazione codice}
+Il programma Java, JavaScript e Python generato dal compilatore Fly per l'entità \verb|distributed-query| è anologo al programma generato per l'entità \verb|query|. Una volta dichiarata l'entità, in entrambi i casi, viene dichiarato all'interno del linguaggio l'oggetto relativo alla sintassi BSON da utilizzare durante l'esecuzione della query. Utilizzando il metodo \verb|execute()| sull'entità \verb|query|, come già introdotto nel capitolo precedente, il compilatore Fly utilizza uno dei metodi fra \verb|find()|, \verb|insertMany()|, \verb|updateMany()|, \verb|replaceOne()| o \verb|deleteMany()|, in base al tipo di operazione da eseuire, sulla variabile relativa alla collezione da interrogare. Questo funzionamento viene esteso alla chiamata del metodo \verb|execute()| sull'entità \verb|distributed-query| in modo da eseguire il metodo richiesto su tutte le collezioni specificate nei parametri \textbf{source\textunderscore n}. L'unica differenza implementativa sta nella gestione dei risultati. Nel capitolo precedente abbiamo visto i risultati ritornati dalle interrogazioni sui database MongoDB, in particolare la lista di tabelle per le interrogazioni di selezione e il numero di elementi rimossi per le interrogazioni di rimozione dei dati.
+
+\subsection{Java}
+All'interno del compilatore Java è stato introdotto il metodo \verb|__executeDis-| \verb|tributedQuery()|. Questo metodo consente di eseguire la stessa query su una lista di database MongoDB. Gli argomenti in input di questo metodo sono:
+\begin{itemize}
+    \item \verb|typeQuery|: argomento di tipo \verb|char| che indica il tipo di interrogazione da eseguire, i valori ammissibili sono:
+    \begin{itemize}
+        \item \verb|"S"|, per operazoni di \verb|select|;
+        \item \verb|"I"|, per operazoni di \verb|insert|;
+        \item \verb|"U"|, per operazoni di \verb|update|;
+        \item \verb|"R"|, per operazoni di \verb|replace|;
+        \item \verb|"D"|, per operazoni di \verb|delete|.
+    \end{itemize}
+    \item \verb|query|: oggetto Java rappresentante la query da eseguire;
+    \item \verb|sourceList|: lista di tutte le risorse su cui eseguire l'interrogazione.
+\end{itemize}
+Questo metodo propaga l'esecuzione dell'interrogazione a tutte le risorse contenute nell'argomento \verb|sourceList|, inoltre, per le operazioni di \verb|select| e \verb|delete|, il risultato ottenuto dalle singole interrogazioni viene compattato e restituito all'utente come singolo risultato. Quindi, nel caso di un'operazione di selezione, tutte le tabelle ottenute dalle singole interrogazioni vengono unite e restituite in un'unica e compatta lista di tabelle, mentre, nel caso di un'operazione di rimozione, il conteggio dei vari elementi rimossi su ogni risorsa viene sommato e restituito all'utente. \\
+Il codice Java generato dalla dichiarazione di un'entità \verb|distributed-query| comprende la dichiarazione degli oggetti MongoDB rappresentanti la sintassi BSON da utilizzare all'esecuzione dell'interrogazione e l'aggiunta di tutte le variabile rappresentati le risorse specificate all'interno di un'array. L'esecuzione del metodo \verb|execute()| comporta, all'interno del codice Java, la chiamata al metodo \verb|__executeDistributedQuery()| con il corretto valore assegnato all'argomento \verb|typeQuery|. \\
+I Listati successivi mostrano il codice Java generato dalla dichiarazione ed esecuzione per ogni tipologia di query distribuita su tre database diversi. L'unica differenza con i Listati mostrati nel capitolo \ref{java} ricade nell'esecuzione dell'interrogazione, che viene gestita dal metodo \verb|__executeDistributedQuery|.
+\begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo distributed-query per l'esecuzione di un'interrogazione di selezione su tre diversi database.}, label={lst:dquery:java:1}]
+BsonDocument selezione = Document.parse("Sintassi BSON");
+
+ArrayList <MongoCollection <Document>> listaDatabase = new ArrayList <> ();
+listaDatabase.add(primoDatabase);
+listaDatabase.add(secondoDatabase);
+listaDatabase.add(terzoDatabase);
+
+ArrayList <Table> listaTabelle = __executeDistributedQuery("S", selezione, listaDatabase);
+\end{lstlisting}
+\begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo distributed-query per l'esecuzione di un'interrogazione di inserimento che utilizza una variabile di tipo stringa su tre diversi database.}, label={lst:dquery:java:2}]
+Stringa stringa = "Sintassi BSON"
+[...]
+
+org.json.JSONArray array = new org.json.JSONArray(stringa);
+List <Document> inserimento = new ArrayList <Document> ();
+
+for(int i = 0; i < array.length(); i++)
+	inserimento.add(Document.parse(array.get(i).toString()));
+
+[...]
+ArrayList <Table> listaTabelle = __executeDistributedQuery("I", inserimento, listaDatabase);
+\end{lstlisting}
+\begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo distributed-query per l'esecuzione di un'interrogazione di inserimento che utilizza una variabile di tipo file su tre diversi database.}, label={lst:dquery:java:3}]
+List <Document> oggettiDaInserire = new ArrayList <Document> ();
+try (CSVReader reader = new CSVReader(new FileReader(fileCSV))) {
+	List <String[]> array = reader.readAll();
+	[...]
+	for(int i = 1; i < array.size(); ++i) {
+		[...]
+	}
+}
+
+[...]
+__executeDistributedQuery("I", oggettiDaInserire, listaDatabase);
+\end{lstlisting}
+\begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo distributed-query per l'esecuzione di un'interrogazione di update su tre diversi database.}, label={lst:dquery:java:4}]
+BsonDocument filter = Document.parse("Sintassi BSON").toBsonDocument();
+
+BsonDocument query = Document.parse("Sintassi BSON").toBsonDocument();
+
+ArrayList <BsonDocument> queries = new ArrayList <>();
+queries.add(filter);
+queries.add(query);
+
+[...]
+__executeDistributedQuery("U", queries, listaDatabase);
+\end{lstlisting}
+\begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo distributed-query per l'esecuzione di un'interrogazione di replace su tre diversi database.}, label={lst:dquery:java:5}]
+BsonDocument filter = Document.parse("Sintassi BSON").toBsonDocument();
+
+BsonDocument query = Document.parse("Sintassi BSON").toBsonDocument();
+
+[...]
+__executeDistributedQuery("R", queries, listaDatabase);
+\end{lstlisting}
+\begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo distributed-query per l'esecuzione di un'interrogazione di delete su tre diversi database.}, label={lst:dquery:java:6}]
+BsonDocument eliminazione = Document.parse("Sintassi BSON").toBsonDocument();
+
+[...]
+int oggettiEliminati = __executeDistributedQuery("D", eliminazione, listaDatabase);
+\end{lstlisting}
+
+\subsection{JavaScript}
+Il codice JavaScript generato dalla dichiarazione ed esecuzione di un'enetità \verb|distributed-query| è analogo al codice JavaScript generato per un'entità \verb|query|, con l'unica differenza che il metodo \verb|find()|, \verb|insertMany()|, \verb|updateMany()|, \verb|replaceOne()| \verb|deleteMany()| viene chiamato su più di una variabile. \\
+Una piccola modifica è stata apportata solo per le interrogazioni di tipo \verb|select| e \verb|delete| in modo da unire i vari risultati ottenuti dalle singole interrogazioni in un unico risultato, vedi Listato~\ref{lst:dquery:js:1} e Listato~\ref{lst:dquery:js:2}.
+\begin{lstlisting}[language=Java,caption={Codice JavaScript generato per la variabile di tipo distributed-query per l'esecuzione di un'interrogazione di selezione su tre diversi database.}, label={lst:dquery:js:1}]
+const selezione = async() => {
+
+	[...]
+
+	await primoDatabase.find(JSON.parse("Sintassi BSON")).forEach((oggetto) => {
+		[...]
+	});
+
+	await secondoDatabase.find(JSON.parse("Sintassi BSON")).forEach((oggetto) => {
+		[...]
+	});
+
+	await terzoDatabase.find(JSON.parse("Sintassi BSON")).forEach((oggetto) => {
+		[...]
+	});
+
+	let tabelle = [];
+
+	[...]
+
+	return tabelle;
+
+}
+
+var listaTabelle = (await selezione());
+\end{lstlisting}
+\begin{lstlisting}[language=Java,caption={Codice JavaScript generato per la variabile di tipo distributed-query per l'esecuzione di un'interrogazione di delete su tre diversi database.}, label={lst:dquery:js:2}]
+const elimina = async() => {
+	
+	let contatoreDatiEliminati = 0;
+
+	contatoreDatiEliminati += (await primoDatabase.deleteMany("Sintassi BSON"));
+
+	contatoreDatiEliminati += (await secondoDatabase.deleteMany("Sintassi BSON"));
+
+	contatoreDatiEliminati += (await terzoDatabase.deleteMany("Sintassi BSON"));
+
+	return new Promise((resolve, reject) => {
+		resolve(contatoreDatiEliminati);
+	});
+
+}
+
+const oggettiEliminati = (await elimina());
+\end{lstlisting}
+
+\subsection{Python}
+Il codice Python generato per la dichiarazione ed eseuzione di un'entità \verb|distributed-query|, come per il linguaggio JavaScript, rimane analogo al codice generato per una variabile di tipo \verb|query|. Anche in questo caso viene apportata una piccola modifica al codice generato per le interrogazioni di tipo \verb|select| e \verb|delete| in modo da unire e restituire i risultati ottenuti dalle singole interrogazioni in unico risultato, vedi Listato~\ref{lst:dquery:py:1} e Listato~\ref{lst:dquery:py:1}.
+\begin{lstlisting}[language=Python,caption={Codice Python generato per la variabile di tipo distributed-query per l'esecuzione di un'interrogazione di selezione su tre diversi database.}, label={lst:dquery:py:1}]
+def __selezione__():
+
+	listaDatabase = []
+	listaDatabase.append(primoDatabase)
+	listaDatabase.append(secondoDatabase)
+	listaDatabase.append(terzoDatabase)
+
+	features = []
+	objects = []
+
+	for database in listaDatabase:
+		risultato = database.find("Sintassi BSON")
+		[...]
+
+	tabelle = []
+	[...]
+	return tabelle
+
+listaTabelle = __selezione()__
+\end{lstlisting}
+\begin{lstlisting}[language=Python,caption={Codice Python generato per la variabile di tipo distributed-query per l'esecuzione di un'interrogazione di delete su tre diversi database.}, label={lst:dquery:py:2}]
+def __elimina__():
+
+	contatoreDatiEliminati = 0
+	
+	contatoreDatiEliminati += primoDatabase.delete_many("Sintassi BSON").deleted_count
+
+	contatoreDatiEliminati += secondoDatabase.delete_many("Sintassi BSON").deleted_count
+	
+	contatoreDatiEliminati += terzoDatabase.delete_many("Sintassi BSON").deleted_count
+
+	return contatoreDatiEliminati
+
+oggettiEliminati = __elimina__()	
+\end{lstlisting}
+
