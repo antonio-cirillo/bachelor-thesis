@@ -207,7 +207,7 @@ println "Sono stati rimossi " + oggettiEliminati + " oggetti."
 \end{lstlisting}
 Le operazioni di \verb|insert|, \verb|update| e \verb|replace| non restituiscono nessun risultato all'interno del programma ma producono solo un effetto all'interno del database.
 
-\section{Generazione codice Java}
+\section{Generazione codice Java} \label{java}
 Il programma Java generato dal compilatore Fly utilizza il driver ufficiale \textit{MongoDB Java} \cite{mongodbjava} che consente alle applicazioni Java di connettersi e lavorare con i dati in MongoDB. Per permettere al programma Java di utilizzare la libreria ufficiale di MongoDB, è stata inserita la dipendenza alla libreria all'interno del file POM di Maven, Listato~\ref{lst:pom}. \\
 Nel Listato~\ref{lst:java:1} è mostrato il codice generato alla dichiarazione di una variaibile di tipo \verb|nosql|. Come specificato in precedenza, esso è utilizzabile indipendentemente dall'ambiente di esecuzione del database in quanto è sufficiente conoscere l'endpoint per accedervi.
 \begin{lstlisting}[language=Java,caption={Codice Java generato per la variaibile di tipo nosql.}, label={lst:java:1}]
@@ -228,7 +228,7 @@ In Java, JavaScript e Python le interrogazioni sul database sono state implement
 \end{itemize}
 Il Listato~\ref{lst:java:2} mostra il codice Java generato dalla dichiarazione ed esecuzione di una query di tipo \verb|select|. Come già introdotto in precedenza, viene utilizzato il metodo \verb|find()| per poter effettuare una query di tipo selezione sul database. Questo metodo permette quindi di estrapolare all'interno di una collezione un set di dati, che viene poi passato come argomento al metodo \verb|__generateTableFromNoSQLQuery()| che si occupa di partizionare e restituire il set di dati in una lista di tabelle.
 \begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo query per l'esecuzione di un'interrogazione di selezione.}, label={lst:java:2}]
-BsonDocument selezione = Document.parse("{ }");
+BsonDocument selezione = Document.parse("Sintassi BSON");
 
 ArrayList <Table> listaTabelle = __generateTableFromNoSQLQuery(dbConn.find(selezione).cursor());
 \end{lstlisting}
@@ -320,6 +320,7 @@ Di seguito viene riportato il Listato~\ref{lst:pom} contenete tutte le dipendenz
 	<version>20210307</version>
 </dependency>
 \end{lstlisting}
+
 \section{Genarazione codice JavaScript}
 L'implementazione dell'interazione con i database MongoDB all'interno di JavaScript sfrutta le librerie:
 \begin{itemize}
@@ -329,7 +330,7 @@ L'implementazione dell'interazione con i database MongoDB all'interno di JavaScr
 Anche in questo caso vale il concetto per cui l'interazione con un cluster MongoDB non varia in base alla sua distribuzione. Il Listato~\ref{lst:js:1} mostra il codice JavaScript generato dalla dichiarazione di un'entità \verb|nosql|.
 \begin{lstlisting}[language=Java,caption={Codice JavaScript generato per la variaibile di tipo nosql.}, label={lst:js:1}]
 const dbConnClient = new mongodb.MongoClient(
-	"mongodb://127.0.0.1:27017",
+	"endpointDatabase",
 	{ useUnifiedTopology: true }
 );
 
@@ -342,7 +343,7 @@ const selezione = async () => {
 	
 	[...]
 		
-	await nosql.find(JSON.parse("{ }")).forEach((oggetto) => {
+	await dbConn.find(JSON.parse("Sintassi BSON")).forEach((oggetto) => {
 		[...]							
 	});
 		
@@ -390,7 +391,7 @@ const elimina = JSON.parse("Sintassi BSON");
 const oggettiEliminati = (await dbConn.deleteMany(elimina)).deletedCount;
 \end{lstlisting}
 
-\subsection{Generazione codice Python}
+\section{Generazione codice Python}
 Le funzioni Fly eseguite nel linguaggio Python utilizzano la libreria ufficiale \textbf{PyMongo} \cite{pymongo} per accedere ed interagire con i database MongoDB. Analogamente a Java e JavaScript l'interazione con database su Cloud funziona allo stesso modo rispetto a quella con database locali, Listato~\ref{lst:py:1}.
 \begin{lstlisting}[language=Python,caption={Codice Python generato per la variaibile di tipo nosql.}, label={lst:py:1}]
 from pymongo import MongoClient
@@ -446,7 +447,7 @@ elimina = json.loads("Sintassi BSON")
 oggettiEliminati = dbConn.delete_many(elimina).deleted_count
 \end{lstlisting}
 
-\subsection{Caso d'uso}
+\section{Caso d'uso}
 Il Listato~\ref{lst:usecase:1} mostra un esempio di interazione con un database MongoDB. L'esempio si basa sulla memorizzazione degli elementi di un file CSV all'interno di un cluster MongoDB distribuito in locale. Questa fase iniziale viene eseguita in locale. Successivamente tramite una funzione Fly tradotta in linguaggio JavaScript ed eseguita mediante i servizi FaaS di AWS, vengono eliminati tutti gli elementi all'interno della collezione che hanno come parametro \verb|temperatura| un valore maggiore di 10. \\
 Il funzionamento del programma viene diviso in due funzioni: \verb|inserimentoOg-| \verb|getti()| e \verb|eliminaTemperatureElevate()|. \\
 La funzione \verb|inserimentoOggetti()| comprende le istruzioni per: 
