@@ -1,0 +1,28 @@
+\section{Lavoro svolto}
+L'obiettivo di implementare all'interno di Fly un supporto per i database MongoDB è stato raggiungo con successo. Esso ha portato alla nascita di un secondo obiettivo implementativo, ovvero offrire all'utente la possibilità di interagire con più istanze di database contemporaneamente. Per far fronte a questo secondo obiettivo, è stato implementato all'interno di Fly l'entità \verb|distributed-query| che permette appunto all'utente di effettuare una singola query su più database utilizzando una sintassi e un comportamento analogo a quello di una query eseguita su un singolo database. \\
+Il lavoro svolto è stato diviso in 5 parti:
+\begin{itemize}
+    \item studio delle funzionalità già presenti all'interno di Fly che consentono all'utente di manipolare dati memorizzati su sorgenti esterne;
+    \item studio delle tecnologie e metodologie necessarie per consentire all'utente di interagire con un database MongoDB;
+    \item implementazione dell'entità \verb|nosql| partendo ed adattando la struttura utilizzata per istanziare un'oggetto di tipo \verb|sql|;
+    \item estensione del comportamento dell'entità \verb|query| su database MongoDB;
+    \item implementazione dell'entità \verb|distributed-query| per permettere all'utente di effettuare una singola operazione su più cluster MongoDB.
+\end{itemize}
+
+\section{Sviluppi futuri}
+I possibili sviluppi futuri che possono interessare il lavoro svolto durante questa tesi, e quindi l'ambito della gestione dei dati, sono:
+\begin{itemize}
+    \item l'estensione del comportamento dell'entità \verb|distributed-query| per i database MySQL;
+    \item implementazione di un supporto ai database a grafo.
+\end{itemize}
+
+\subsection{Database a grafo}
+I database a grafo sono un tipologia di database che utilizza nodi e archi per rappresentare e archiviare i dati. Questa modello di rappresentazione permette di ottenere una maggiore velocità nell'associazione di insieme di dati rispetto ai database relazionali. Inoltre, scalano più facilmente a grandi quantità di dati e non richiedono le tipiche e onerose operazioni di unione. \\
+Una possibile implementazione all'interno di Fly potrebbe essere quella di permettere all'utente di interagire con un database Neo4j. \cite{neo4j}. Neo4j è un Graph DBMS open source transazionale, prodotto dalla software house Neo Technology, sviluppato interamente in Java. Le sue proprietà principali sono:
+\begin{itemize}
+    \item transazioni ACID;
+    \item può memorizzare miliardi di nodi e relazioni;
+    \item alta velocità di interrogazione tramite attraversamenti;
+    \item linguaggio di interrogazione dichiarativo e grafico;
+    \item compatibile con i servizi di gestione ai database a grafo offerti da Azure e AWS.
+\end{itemize}
