@@ -61,7 +61,7 @@ La dichiarazione di una variabile di \verb|type = "nosql"| è quindi composta da
     \item \textbf{collection}: stringa rappresentante il nome della collezione del database;
     \item \textbf{properties} (opzionale): stringa rappresentante il path assoluto del file log4j.properties.
 \end{itemize}  
-L'entità \verb|nosql| offre un metodo alternativo per permettere all'utente di stabilire una connessione ad un cluster MongoDB distribuito su Azure, utilizzando i parametri \verb|resource_group| e \verb|instance|, in sostituzione al parametro \verb|endpoint|, come mostrato nel Listato~\ref{lst:nosql:3}. Questi due parametri permettono a Fly di ottenere, in modo del tutto astratto all'utente, l'endpoint del database tramite il nome dell'istanza del cluster e il nome del gruppo di risorse in cui è in esecuzione. Per poter utilizzare questi due parametri occorre utilizzare la parola chiave \verb|on| seguita dalla variabile di \verb|type = "azure"|.
+L'entità \verb|nosql| offre un metodo alternativo per permettere all'utente di stabilire una connessione ad un cluster MongoDB distribuito su Azure, utilizzando i parametri \verb|resource_group| e \verb|instance|, in sostituzione al parametro \verb|endpoint|, come mostrato nel Listato~\ref{lst:nosql:3}. Questi due parametri permettono a Fly di ottenere, in modo del tutto astratto all'utente, l'endpoint del database tramite il nome dell'istanza del cluster e il nome del gruppo di risorse in cui è in esecuzione. Per poter utilizzare questi due parametri occorre utilizzare la parola chiave \verb|on| seguita dalla variabile \verb|type = "azure"|.
 \begin{lstlisting}[language=FLY,caption={Dichiarazione di entità nosql che utilizza un file log4j.properties specifico}, label={lst:nosql:1}]
 var dbConnLocal = [type="nosql", endpoint="endpointDatabase", db_name="nomeDatabase", collection="nomeCollection", properties="pathDelFileLog4jProperties"]
 \end{lstlisting}
@@ -73,9 +73,9 @@ var dbConnAz = [type="nosql",  resource_group="nomeResourceGroup", instance="nom
 \end{lstlisting} 
 
 \subsection{Creazione ed esecuzione di query}
-Fly mette a disposizione dell'utente l'entità \verb|query| per poter effettuare operazioni di inserimento, selezione, modifica e cancellazioni sui database MySQL. La dichiarazione di una variabile di tipo \verb|query| è composta, oltre dal parametro \verb|type = "query"| che ne specifica appunto il tipo, dai seguenti parametri \cite{giuseppe}:
+Fly mette a disposizione dell'utente l'entità \verb|query| per poter effettuare operazioni di inserimento, selezione, modifica e cancellazione sui database MySQL. La dichiarazione di una variabile di tipo \verb|query| è composta, oltre dal parametro \verb|type = "query"| che ne specifica appunto il tipo, dai seguenti parametri \cite{giuseppe}:
 \begin{itemize}
-    \item \textbf{query\textunderscore type}: stringa rappresentante il tipo della query da eseguire (\verb|select|, \verb|value|, \verb|update|);
+    \item \textbf{query\textunderscore type}: stringa rappresentante il tipo di query da eseguire (\verb|select|, \verb|value|, \verb|update|);
     \item \textbf{connection}: nome della variabile di tipo \verb|sql| rappresentante la connessione ad un database;
     \item \textbf{query}: interrogazione in un linguaggio SQL da eseguire, può essere specificata in due differenti formati:
     \begin{itemize}
@@ -207,7 +207,7 @@ var eliminazione = [type="query", query_type="delete", connection=dbConn, query=
 		
 var oggettiEliminati = eliminazione.execute()
 	
-println "Sono stati rimossi " + oggettiEliminati + " oggetti."
+println "Numero di oggetti eliminati: " + oggettiEliminati
 \end{lstlisting}
 Le operazioni di \verb|insert|, \verb|update| e \verb|replace| non restituiscono nessun risultato all'interno del programma ma producono solo un effetto all'interno del database.
 
@@ -325,7 +325,7 @@ Di seguito viene riportato il Listato~\ref{lst:pom} contenente tutte le dipenden
 </dependency>
 \end{lstlisting}
 
-\section{Genarazione codice JavaScript}
+\section{Generazione codice JavaScript}
 L'implementazione dell'interazione con i database MongoDB all'interno di JavaScript sfrutta le librerie:
 \begin{itemize}
     \item \textit{mongodb} \cite{mongodbnode}, libreria ufficiale di MongoDB per il linguaggio JavaScript;
