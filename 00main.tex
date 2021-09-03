@@ -15,8 +15,8 @@
 \usepackage[labelfont=it,textfont={it}]{caption}
 \usepackage[final,bookmarks,breaklinks,colorlinks,allcolors=black]{hyperref}
 \usepackage{color}
-\usepackage[numbers]{natbib}
-\usepackage{float}
+\usepackage[block=ragged,backend=biber,natbib=true]{biblatex} % Use the bibtex backend with the authoryear citation style (which resembles APA)
+\addbibresource{bibliography.bib} % The filename of the bibliography
 \usepackage[autostyle=true]{csquotes} % Required to generate language-dependent quotes in the bibliography
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -133,7 +133,7 @@ showstringspaces=false}
 
 {\bf Relatore} \hfill {\bf Candidato}\ \ \\
 Prof. Vittorio Scarano \hfill Antonio Cirillo\\
-{\bf Correlatore} \hfill {\bf }\ \ \\
+{\bf Correlatore} \hfill {\bf }\hfill {\bf Mat.} 0512106096\\
 Dott. Giuseppe D'Ambrosio \hfill \ \ \\
 
 \vfill
@@ -165,7 +165,7 @@ Anno Accademico 2020-2021
 \input{2statoarte.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Fly Language}
+\chapter{FLY Language}
 \input{3fly.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -182,8 +182,7 @@ Anno Accademico 2020-2021
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \nocite{*}
-\bibliographystyle{ieeetr}
-\bibliography{bib}
+\printbibliography[title={Bibliografia}] 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}

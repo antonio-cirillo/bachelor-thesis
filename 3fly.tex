@@ -27,7 +27,7 @@ I DSL possono essere implementati mediante interpretazione o generazione di codi
 
 \section{Architettura}
 Un programma scritto in Fly viene tradotto in automatico dal compilatore in codice Java. Il programma Java orchestra tutto il funzionamento del programma Fly, dalla sua esecuzione all'allocazione di tutte le risorse necessarie al suo funzionamento. Nella \figurename~\ref{fig:esecuzione} viene mostrato il flusso di esecuzione di un programma Fly.
-\begin{figure}[H]
+\begin{figure}[htbp]
  \centering
  \includegraphics[scale=0.22]{./Figure/FLYEsecuzione.png}
  \caption{Flusso di esecuzione di Fly.}
@@ -68,12 +68,6 @@ func estimation(){
 fly hit in [0:100] on Cloud thenall estimation  
 \end{lstlisting}  
 Il metodo “Monte Carlo" è una strategia di risoluzione di problemi che utilizza la statistica: se la probabilità di un certo evento è \textit{P} possiamo simulare in maniera random questo evento e ottenere \textit{P} facendo (numero di volte in cui il nostro evento è avvenuto)/(simulazioni totali) \cite{reactconsulting}. In questo esempio viene utilizzata questa strategia per ottenere una stima del PI Greco. Si consideri un quadrato di lato \(l = 1\) e un quadrante circolare di raggio \(r = 1\) inscritto nel quadrato. Immaginiamo di disporre un numero finito di punti casuali all'interno del quadrato, come mostrato nella \figurename~\ref{fig:pi}
-\begin{figure}[H]
- \centering
- \includegraphics[scale=0.7]{./Figure/montecarlo.png}
- \caption{Generazione di punti casuali all'interno dell'area del rettangolo.}
- \label{fig:pi}
-\end{figure}
 Grazie alla distribuzione casuale, utilizzando un numero molto grande di punti generati, possiamo approssimare la misura delle aree con il numero di punti contenuto in esse. Rappresentiamo il numero dei punti nel quadrato con \(n_q = l^2\) e il numero di punti nell’area del cerchio con \(n_c =  \frac{\pi r^2}{4}\), poiché consideriamo solo uno dei quattro quadranti del cerchio. Notiamo subito che:
 \begin{equation} \frac{n_c}{n_q} = \frac{\pi r^2}{4} \cdot \frac{1}{l^2} = \frac{\pi}{4} \end{equation}
 Da cui:
