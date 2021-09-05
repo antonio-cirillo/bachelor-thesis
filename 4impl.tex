@@ -1,9 +1,9 @@
-Al giorno d'oggi lavorare con dati provenienti da diverse sorgenti è diventata una necessità in qualsiasi contesto, ancora di più nell'ambito del Calcolo Scientifico. Per venire incontro a questo tipo di necessità Fly mette a disposizione degli sviluppatori delle entità che permettono di accedere e utillizzare dati provenienti da sorgenti esterne. In questo momento è possibile in Fly manipolare dati presenti all'interno di file strutturati grazie all'entità \verb|dataframe|. Essa permette di effettuare operazioni di lettura, scrittura e modifica su file CSV, fogli Excel e semplici txt. Inoltre, Fly supporta l'interazione con i database MySQL tramite la presenza dell'entità \verb|sql|, che permette di stabilire una connessione ad un database MySQL sia locale che su Cloud, e dell'entità \verb|query|, che permette di creare ed eseguire query per la manipolazione dei dati. \\
-L'aumento della mole di dati e la velocità con cui essi vengono prodotti ha determinato la nascita di soluzioni incentrate sul concetto di \textbf{scalabilità}. Grazie al dimensionamento orizzontalmente e ai diversi schemi flessibili utilizzabili per rappresentare i dati, i database NoSQL offrono una soluzione efficace e veloce per la gestione di set di dati di grandissime dimensioni. Essa risulta essere molto vantaggiosa per ambiti come il Calolo Scientifico dove si preferiscono soluzioni che garantiscono la disponibilità dei dati rispetto alla loro coerenza. È risultato quindi necessario implementare all’interno di Fly un supporto ai database NoSQL. Uno degli obiettivi di sviluppo principale è quello di permettere allo sviluppatore di interagire con un cluster NoSQL distribuito su Cloud utilizzando la stessa sintassi necessaria per interagire con un cluster NoSQL distribuito in locale, in modo da rendere la sintassi facile da imparare e da utilizzare. Per poter realizzare questo obiettivo è risultato necessario implementare all'interno di Fly un supporto ai database NoSQL compatibili con MongoDB, in quanto al momento MongoDB è l'unico database NoSQL supportato dai diversi Cloud Provider. \\
-In questo capitolo verrà descritta l'implementazione all'interno di Fly del supporto ai database MongoDB distribuiti sia in locale che su Cloud.
+Al giorno d'oggi lavorare con dati provenienti da diverse sorgenti è diventata una necessità in qualsiasi contesto, ancora di più nell'ambito del Calcolo Scientifico. Per venire incontro a questo tipo di necessità FLY mette a disposizione degli sviluppatori delle entità che permettono di accedere e utillizzare dati provenienti da sorgenti esterne. Attualmente, FLY permette di manipolare dati presenti all'interno di file strutturati grazie all'entità \verb|dataframe|. Essa permette di effettuare operazioni di lettura, scrittura e modifica su file CSV, fogli Excel e semplici txt. Inoltre, FLY supporta l'interazione con i database MySQL tramite la presenza dell'entità \verb|sql|, che permette di stabilire una connessione ad un database MySQL sia locale che su Cloud, e dell'entità \verb|query|, che permette di creare ed eseguire query per la manipolazione dei dati. \\
+L'aumento della mole di dati e la velocità con cui essi vengono prodotti ha determinato la nascita di soluzioni incentrate sul concetto di \textbf{scalabilità}. Grazie al dimensionamento orizzontale e ai diversi schemi flessibili utilizzabili per rappresentare i dati, i database NoSQL offrono una soluzione efficace e veloce per la gestione di set di dati di grandissime dimensioni. Essa risulta essere molto vantaggiosa per ambiti come il Calcolo Scientifico dove si preferiscono soluzioni che garantiscono la disponibilità dei dati rispetto alla loro coerenza. È risultato quindi necessario implementare all’interno di FLY un supporto ai database NoSQL. Uno degli obiettivi di sviluppo principale di questo lavoro di tesi è quello di permettere allo sviluppatore di interagire con un cluster NoSQL distribuito su Cloud utilizzando la stessa sintassi necessaria per interagire con un cluster NoSQL distribuito in locale, in modo da rendere la sintassi facile da imparare e da utilizzare. Per poter realizzare questo obiettivo è risultato necessario implementare all'interno di FLY un supporto ai database NoSQL compatibili con MongoDB, in quanto al momento MongoDB è l'unico database NoSQL supportato dai diversi Cloud Provider. \\
+In questo capitolo verrà descritta l'implementazione all'interno di FLY del supporto ai database MongoDB distribuiti sia in locale che su Cloud.
 
 \section{Obiettivi}
-Per permettere l'interazione con i database MongoDB all'interno di Fly sono stati posti alcuni obiettivi implementativi:
+Per permettere l'interazione con i database MongoDB all'interno di FLY sono stati posti alcuni obiettivi implementativi:
 \begin{itemize}
     \item connettersi e accedere ad un cluster MongoDB distribuito sia in locale che su Cloud;
     \item creare ed eseguire query per la manipolazione dei dati;
@@ -12,7 +12,7 @@ Per permettere l'interazione con i database MongoDB all'interno di Fly sono stat
 \end{itemize}
 
 \section{Implementazione}
-All'interno di Fly sono presenti due entità che permettono all'utente di interagire con un database MySQL:
+All'interno di FLY sono presenti due entità che permettono all'utente di interagire con un database MySQL:
 \begin{itemize}
     \item \verb|sql| - entità che permette di stabilire una connessione ad un database di tipo MySQL;
     \item \verb|query| - entità che permette di creare ed eseguire query sul database.
@@ -23,7 +23,7 @@ Grazie all'entità \verb|query| è possibile effettuare operazioni di:
     \item \verb|value|: query di aggregazione che restituisce come risultato una stringa complessa che deve essere opportunamente filtrata;
     \item \verb|update|: query di inserimento, modifica o cancellazione che restituisce come risultato il numero di righe coinvolte;
 \end{itemize}
-Queste due entità sono state utilizzate come punto di partenza per implementare l'interazione con i database MongoDB all'interno di Fly. In modo analogo all'entità \verb|sql| è stata implementata all'interno di Fly l'entità \verb|nosql|, necessaria per stabilire una connessione ad un cluster MongoDB. Inoltre, il comportamento dell'entità \verb|query| è stato esteso anche per i database MongoDB, in modo da creare un'interazione fra le due diverse tipologie di database il quanto più possibile omogenea.
+Queste due entità sono state utilizzate come punto di partenza per implementare l'interazione con i database MongoDB all'interno di FLY. In modo analogo all'entità \verb|sql| è stata implementata all'interno di FLY l'entità \verb|nosql|, necessaria per stabilire una connessione ad un cluster MongoDB. Inoltre, il comportamento dell'entità \verb|query| è stato esteso anche per i database MongoDB, in modo da creare un'interazione fra le due diverse tipologie di database il quanto più possibile omogenea.
 
 \subsection{Connessione al database}
 Come già introdotto nel capitolo precedente, la possibilità di stabilire una connessione ad un database MongoDB è stata resa possibile mediante l'implementazione dell'entità \verb|nosql|. L'obiettivo principale è quello di creare un meccanismo di connessione simile a quello già presente per i database MySQL. La dichiarazione di una variabile di tipo \verb|sql| è composta dai seguenti parametri \cite{giuseppe}:
@@ -35,9 +35,11 @@ Come già introdotto nel capitolo precedente, la possibilità di stabilire una c
     \item \textbf{password}: stringa rappresentante la password di accesso al database.
 \end{itemize}
 Per raggiungere l'obiettivo posto, l'idea implementativa dell'entità \verb|nosql| parte dall'utilizzo di questa struttura. \\ 
+
+\subsection{Integrazione di MongoDB}
 I database MongoDB, a differenza dei database MySQL, vengono partizionati in un insieme di collezioni. Una collezione può essere vista come un sotto-database indipendente dalle altre collezioni. Risulta quindi necessario introdurre un parametro, all'interno della dichiarazione dell'entità \verb|nosql|, che permette di specificare a quale collezione l'utente intende collegarsi. \\
-MongoDB utilizza \textbf{Log4J} \cite{log4j}, una libreria Java sviluppata dalla Apache Software Foundation che permette di mettere a punto un ottimo sistema di logging per tenere sotto controllo il comportamento di un'applicazione, sia in fase di sviluppo che in fase di test e messa in opera del prodotto finale. Per poter quindi stabilire una connessione ad un database MongoDB è necessario specificare il path del file \textit{log4j.properties}. Questo file contiene le proprietà che verranno utilizzate per il sistema di logging del cluster MongoDB. Per far fronte a questa necessità, viene introdotto il parametro opzionale \verb|properties|, vedi Listato~\ref{lst:nosql:1}. Se non specificato, come nel Listato~\ref{lst:nosql:2}, Fly genera e utilizza in un automatico il seguende file \textit{log4j.properties}.
-\begin{lstlisting}[language=Java,caption={File log4j.properties generato in automatico da Fly.}, label={lst:log}]
+MongoDB utilizza \textbf{Log4J} \cite{log4j}, una libreria Java sviluppata dalla Apache Software Foundation che permette di mettere a punto un sistema di logging per tenere sotto controllo il comportamento di un'applicazione, sia in fase di sviluppo che in fase di test e messa in opera del prodotto finale. Per poter quindi stabilire una connessione ad un database MongoDB è necessario specificare il path del file \textit{log4j.properties}. Questo file contiene le proprietà che verranno utilizzate per il sistema di logging del cluster MongoDB. Per far fronte a questa necessità, viene introdotto il parametro opzionale \verb|properties|, vedi Listato~\ref{lst:nosql:1}. Se non specificato, come nel Listato~\ref{lst:nosql:2}, FLY genera e utilizza in un automatico il seguende file \textit{log4j.properties}.
+\begin{lstlisting}[language=Java,caption={File log4j.properties generato in automatico da FLY.}, label={lst:log}]
 log4j.appender.stdout.Target=System.out
 log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
 log4j.appender.stdout=org.apache.log4j.ConsoleAppender
@@ -61,11 +63,11 @@ La dichiarazione di una variabile di \verb|type = "nosql"| è quindi composta da
     \item \textbf{collection}: stringa rappresentante il nome della collezione del database;
     \item \textbf{properties} (opzionale): stringa rappresentante il path assoluto del file log4j.properties.
 \end{itemize}  
-L'entità \verb|nosql| offre un metodo alternativo per permettere all'utente di stabilire una connessione ad un cluster MongoDB distribuito su Azure, utilizzando i parametri \verb|resource_group| e \verb|instance|, in sostituzione al parametro \verb|endpoint|, come mostrato nel Listato~\ref{lst:nosql:3}. Questi due parametri permettono a Fly di ottenere, in modo del tutto astratto all'utente, l'endpoint del database tramite il nome dell'istanza del cluster e il nome del gruppo di risorse in cui è in esecuzione. Per poter utilizzare questi due parametri occorre utilizzare la parola chiave \verb|on| seguita dalla variabile \verb|type = "azure"|.
+L'entità \verb|nosql| offre un metodo alternativo per permettere all'utente di stabilire una connessione ad un cluster MongoDB distribuito su Azure, utilizzando i parametri \verb|resource_group| e \verb|instance|, in sostituzione al parametro \verb|endpoint|, come mostrato nel Listato~\ref{lst:nosql:3}. Questi due parametri permettono a FLY di ottenere, in modo del tutto astratto all'utente, l'endpoint del database tramite il nome dell'istanza del cluster e il nome del gruppo di risorse in cui è in esecuzione. Per poter utilizzare questi due parametri occorre utilizzare la parola chiave \verb|on| seguita dalla variabile \verb|type = "azure"|.
 \begin{lstlisting}[language=FLY,caption={Dichiarazione di entità nosql che utilizza un file log4j.properties specifico}, label={lst:nosql:1}]
 var dbConnLocal = [type="nosql", endpoint="endpointDatabase", db_name="nomeDatabase", collection="nomeCollection", properties="pathDelFileLog4jProperties"]
 \end{lstlisting}
-\begin{lstlisting}[language=FLY,caption={Dichiarazione di entità nosql per la connesione ad un database tramite l'utilizzo dell'endpoint che utilizza il file log4j.properties generato in automatico da Fly.}, label={lst:nosql:2}]
+\begin{lstlisting}[language=FLY,caption={Dichiarazione di entità nosql per la connesione ad un database tramite l'utilizzo dell'endpoint che utilizza il file log4j.properties generato in automatico da FLY.}, label={lst:nosql:2}]
 var dbConnLocal = [type="nosql", endpoint="endpointDatabase", db_name="nomeDatabase", collection="nomeCollection"]
 \end{lstlisting}  
 \begin{lstlisting}[language=FLY,caption={Dichiarazione di entità nosql per la connessione ad un database distribuito su Azure tramite l'utilizzo dei parametri resource\textunderscore group e instance.}, label={lst:nosql:3}]
@@ -73,7 +75,7 @@ var dbConnAz = [type="nosql",  resource_group="nomeResourceGroup", instance="nom
 \end{lstlisting} 
 
 \subsection{Creazione ed esecuzione di query}
-Fly mette a disposizione dell'utente l'entità \verb|query| per poter effettuare operazioni di inserimento, selezione, modifica e cancellazione sui database MySQL. La dichiarazione di una variabile di tipo \verb|query| è composta, oltre dal parametro \verb|type = "query"| che ne specifica appunto il tipo, dai seguenti parametri \cite{giuseppe}:
+FLY mette a disposizione dell'utente l'entità \verb|query| per poter effettuare operazioni di inserimento, selezione, modifica e cancellazione sui database MySQL. La dichiarazione di una variabile di tipo \verb|query| è composta, oltre dal parametro \verb|type = "query"| che ne specifica appunto il tipo, dai seguenti parametri \cite{giuseppe}:
 \begin{itemize}
     \item \textbf{query\textunderscore type}: stringa rappresentante il tipo di query da eseguire (\verb|select|, \verb|value|, \verb|update|);
     \item \textbf{connection}: nome della variabile di tipo \verb|sql| rappresentante la connessione ad un database;
@@ -94,8 +96,8 @@ var queryStatement = [type="query", query_type="select", connection=dbConn, quer
 var risultato = queryStatement.execute()
 \end{lstlisting}
 \end{itemize}
-Le operazioni permesse sui database MongoDB trovano un riscontro con quelle permesse sui database MySQL. Su un database MongoDB è possibile effettuare operazioni di \verb|insert|, \verb|select|, \verb|update|, \verb|delete| e, in aggiunta rispetto ai database MySQL, l'operazione di \verb|replace|. L'operazione di \verb|replace|, a differenza della semplice operazione di \verb|update|, non modifica un oggetto presente all'interno del database ma lo sostituisce con un nuovo oggetto. \\
-La corrispondenza delle operazioni permesse sui diversi tipi di database permette di estendere il comportamento dell'entità \verb|query| ai database MongoDB, con una piccola differenza. Le operazioni di inserimento, modifica e cancellazione sui database MySQL vengono identificate dal parametro \verb|query_type = "update"|, in quanto la sintassi SQL specifica il tipo di operazione che si intende eseguire. Questa caratteristica permette a Fly di generare correttamente il codice Java in base al tipo di operazione che si intende eseguire. Ciò non accade con la sintassi BSON (Binary JSON), ovvero la sintassi utilizzata per interrogare i database MongoDB. Risulta quindi necessario specificare quale delle tre operazioni si intende effettuare all'interno del parametro \verb|query_type|, in modo da permettere a Fly di generare il codice Java adeguato a quella situazione. Inoltre, le operazioni di \verb|update| e \verb|replace| su un database MongoDB sono composte da due query distinte:
+Le operazioni permesse sui database MongoDB trovano un riscontro diretto con quelle permesse sui database MySQL. Su un database MongoDB è possibile effettuare operazioni di \verb|insert|, \verb|select|, \verb|update|, \verb|delete| e, in aggiunta rispetto ai database MySQL, l'operazione di \verb|replace|. L'operazione di \verb|replace|, a differenza della semplice operazione di \verb|update|, non modifica un oggetto presente all'interno del database ma lo sostituisce con un nuovo oggetto. \\
+La corrispondenza delle operazioni permesse sui diversi tipi di database permette di estendere il comportamento dell'entità \verb|query| ai database MongoDB, con una piccola differenza. Le operazioni di inserimento, modifica e cancellazione sui database MySQL vengono identificate dal parametro \verb|query_type = "update"|, in quanto la sintassi SQL specifica il tipo di operazione che si intende eseguire. Questa caratteristica permette a FLY di generare correttamente il codice Java in base al tipo di operazione che si intende eseguire. Ciò non accade con la sintassi BSON (Binary JSON), ovvero la sintassi utilizzata per interrogare i database MongoDB. Risulta quindi necessario specificare quale delle tre operazioni si intende effettuare all'interno del parametro \verb|query_type|, in modo da permettere a FLY di generare il codice Java adeguato a quella situazione. Inoltre, le operazioni di \verb|update| e \verb|replace| su un database MongoDB sono composte da due query distinte:
 \begin{itemize}
     \item \textbf{filter}: query che seleziona l'oggetto da modificare all'interno del database;
     \item \textbf{query}: query che modifica l'oggetto selezionato.
@@ -125,7 +127,7 @@ L'implementazione finale di queste modifiche ha fatto sì che la dichiarazione d
         \item \textbf{end}: specifica la posizione all'interno del file CSV dell'ultimo elemento da inserire nel database.
     \end{itemize}
 \end{itemize}
-Nell'introduzione del capitolo abbiamo visto come Fly supporta anche la manipolazione di dati provenienti da file strutturati come fogli Excel e file CSV. In molti casi d'uso la manipolazione dei dati comporta la necessità di salvare dati provenienti da file strutturati all'interno di un database. Per questo motivo Fly permette di specificare all'interno del parametro \verb|query| il nome di una variabile di tipo \verb|file|, come mostrato nel Listato~\ref{lst:test:2}. Questa funzionalità permette, con una semplice riga di codice, di prelevare i dati presenti all'interno di un file CSV e inserirli all'interno di una collezione specifica di un database MongoDB. Inoltre, è possibile specificare la posizione di partenza e di fine degli elementi da prelevare all'interno del file, tramite l'utilizzo dei parametri opzionali \verb|start| e \verb|end|, come mostrato nel Listato~\ref{lst:test:3}. \\
+Nell'introduzione del capitolo abbiamo visto come FLY supporta anche la manipolazione di dati provenienti da file strutturati come fogli Excel e file CSV. In molti casi d'uso la manipolazione dei dati comporta la necessità di salvare dati provenienti da file strutturati all'interno di un database. Per questo motivo FLY permette di specificare all'interno del parametro \verb|query| il nome di una variabile di tipo \verb|file|, come mostrato nel Listato~\ref{lst:test:2}. Questa funzionalità permette, con una semplice riga di codice, di prelevare i dati presenti all'interno di un file CSV e inserirli all'interno di una collezione specifica di un database MongoDB. Inoltre, è possibile specificare la posizione di partenza e di fine degli elementi da prelevare all'interno del file, tramite l'utilizzo dei parametri opzionali \verb|start| e \verb|end|, come mostrato nel Listato~\ref{lst:test:3}. \\
 \begin{lstlisting}[language=FLY,caption={Dichiarazione di entità query per l'inserimento degli elementi provenienti da un file CSV.}, label={lst:test:2}]
 var inserisciDaCSV = [type="query", query_type="insert", connection=dbConn, query=fileCSV]
 
@@ -186,7 +188,7 @@ Applicare questa strategia anche per i database MongoDB risulta non essere effic
  \hline
 \end{tabular}
 \end{center}
-Quest'analisi ha portato all'implementazione del metodo \verb|__generateTable-| \verb|FromNoSQLQuery| all'interno del generatore di Fly. Grazie all'utilizzo di questo metodo i dati ottenuti tramite l'operazione di selezione su un database MongoDB vengono raggrupparti all'interno di un insieme di tabelle e restituite all'utente, vedi Listato~\ref{lst:tabelle:2}.
+Quest'analisi ha portato all'implementazione del metodo \verb|__generateTable-| \verb|FromNoSQLQuery| all'interno del generatore di FLY. Grazie all'utilizzo di questo metodo i dati ottenuti tramite l'operazione di selezione su un database MongoDB vengono raggrupparti all'interno di un insieme di tabelle e restituite all'utente, vedi Listato~\ref{lst:tabelle:2}.
 \begin{lstlisting}[language=FLY,caption={Stampa a schermo di tutte le tabelle ottenute tramite l'esecuzione di una query di selezione su un database MongoDB.}, label={lst:tabelle:2}]
 var dbConn = [type="nosql", endpoint="endpointDatabase", database="nomeDatabase", collection="nomeCollection"]
 
@@ -212,7 +214,7 @@ println "Numero di oggetti eliminati: " + oggettiEliminati
 Le operazioni di \verb|insert|, \verb|update| e \verb|replace| non restituiscono nessun risultato all'interno del programma ma producono solo un effetto all'interno del database.
 
 \section{Generazione codice Java} \label{java}
-Il programma Java generato dal compilatore Fly utilizza il driver ufficiale \textit{MongoDB Java} \cite{mongodbjava} che consente alle applicazioni Java di connettersi e lavorare con i dati in MongoDB. Per permettere al programma Java di utilizzare la libreria ufficiale di MongoDB, è stata inserita la dipendenza alla libreria all'interno del file POM di Maven, Listato~\ref{lst:pom}. \\
+Il programma Java generato dal compilatore FLY utilizza il driver ufficiale \textit{MongoDB Java} \cite{mongodbjava} che consente alle applicazioni Java di connettersi e lavorare con i dati in MongoDB. Per permettere al programma Java di utilizzare la libreria ufficiale di MongoDB, è stata inserita la dipendenza alla libreria all'interno del file POM di Maven. \\
 Nel Listato~\ref{lst:java:1} è mostrato il codice generato alla dichiarazione di una variaibile di tipo \verb|nosql|. Esso è utilizzabile indipendentemente dall'ambiente di esecuzione del database in quanto è sufficiente conoscere l'endpoint per accedervi.
 \begin{lstlisting}[language=Java,caption={Codice Java generato per la variaibile di tipo nosql.}, label={lst:java:1}]
 [...]
@@ -246,7 +248,7 @@ Il codice Java generato dalla dichiarazione ed esecuzione di una query di tipo \
     \end{itemize}
 \end{itemize}
 L'inserimento degli oggetti all'interno di una collezione di un database MongoDB è permesso dall'utilizzo del metodo \verb|insertMany()|. Per poter utilizzare questo metodo è necessario convertire gli elementi da inserire dal tipo \verb|String| al tipo \verb|Document|, ovvero il tipo utilizzato dalla libreria \textit{MongoDB Java} per rappresentare gli oggetti. \\
-Il codice Java generato per l'esecuzione di un inserimento tramite una variabile di tipo stringa, utilizza la libreria \textit{JSON} \cite{json}, vedi rigo 4-8. Analogamente alla dipendenza per la libreria \textit{MongoDB Java}, anche la dipendenza relativa alla libreria \textit{JSON} è stata inserita all'interno del file POM di Maven, Listato~\ref{lst:pom}.
+Il codice Java generato per l'esecuzione di un inserimento tramite una variabile di tipo stringa, utilizza la libreria \textit{JSON} \cite{json}, vedi rigo 4-8. Analogamente alla dipendenza per la libreria \textit{MongoDB Java}, anche la dipendenza relativa alla libreria \textit{JSON} è stata inserita all'interno del file POM di Maven.
 \begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo query per l'esecuzione di un'interrogazione di inserimento che utilizza una variabile di tipo stringa.}, label={lst:java:3}]
 String stringa = "Sintassi BSON"
 [...]
@@ -259,7 +261,7 @@ for(int i = 0; i < array.length(); i++)
 
 dbConn.insertMany(inserimento);
 \end{lstlisting}
-Il codice Java generato per l'esecuzione di un inserimento tramite una variabile di tipo \verb|file|, comprende una fase iniziale di lettura degli oggetti. Gli oggetti presenti all'interno del file CSV vengono letti e memorizzati tramite l'utilizzo dell'oggetto \verb|CSVReader| della libreria \textit{OpenCSV} \cite{opencsv}. Come per le altre, la dipendenza alla libreria \textit{OpenCSV} è stata aggiunta al file POM di Maven, Listato~\ref{lst:pom}. Una volta letti, i vari oggetti vengono convertiti nel tipo \verb|Document| e poi passati in input al metodo \verb|insertMany()|.
+Il codice Java generato per l'esecuzione di un inserimento tramite una variabile di tipo \verb|file|, comprende una fase iniziale di lettura degli oggetti. Gli oggetti presenti all'interno del file CSV vengono letti e memorizzati tramite l'utilizzo dell'oggetto \verb|CSVReader| della libreria \textit{OpenCSV} \cite{opencsv}. Come per le altre, la dipendenza alla libreria \textit{OpenCSV} è stata aggiunta al file POM di Maven. Una volta letti, i vari oggetti vengono convertiti nel tipo \verb|Document| e poi passati in input al metodo \verb|insertMany()|.
 \begin{lstlisting}[language=Java,caption={Codice Java generato per la variabile di tipo query, priva dei parametri start ed end, per l'esecuzione di un'interrogazione di inserimento che utilizza una variabile di tipo file.}, label={lst:java:4}]
 List <Document> oggettiDaInserire = new ArrayList <Document> ();
 try (CSVReader reader = new CSVReader(new FileReader(fileCSV))) {
@@ -305,24 +307,6 @@ Il Listato~\ref{lst:java:8} mostra il codice Java generato per l'esecuzione di u
 BsonDocument eliminazione = Document.parse("Sintassi BSON").toBsonDocument();
 
 int oggettiEliminati = dbConn.deleteMany(eliminazione).getDeletedCount();
-\end{lstlisting}
-Di seguito viene riportato il Listato~\ref{lst:pom} contenente tutte le dipendenze aggiunte al file POM di Maven durante questo lavoro di tesi.
-\begin{lstlisting}[language=xml,caption={Lista di dipendenze aggiunte al file POM di Maven.}, label={lst:pom}]
-<dependency>
-	<groupId>org.mongodb</groupId>
-	<artifactId>mongo-java-driver</artifactId>
-	<version>3.12.8</version>
-</dependency>
-<dependency>
-	<groupId>com.opencsv</groupId>
-	<artifactId>opencsv</artifactId>
-	<version>5.3</version>
-</dependency>
-<dependency>
-	<groupId>org.json</groupId>
-	<artifactId>json</artifactId>
-	<version>20210307</version>
-</dependency>
 \end{lstlisting}
 
 \section{Generazione codice JavaScript}
@@ -397,7 +381,7 @@ const oggettiEliminati = (await dbConn.deleteMany(elimina)).deletedCount;
 \end{lstlisting}
 
 \section{Generazione codice Python}
-Le funzioni Fly eseguite nel linguaggio Python utilizzano la libreria ufficiale \textbf{PyMongo} \cite{pymongo} per accedere ed interagire con i database MongoDB. Analogamente a Java e JavaScript l'interazione con database su Cloud funziona allo stesso modo rispetto a quella con database locali, Listato~\ref{lst:py:1}.
+Le funzioni FLY eseguite nel linguaggio Python utilizzano la libreria ufficiale \textbf{PyMongo} \cite{pymongo} per accedere ed interagire con i database MongoDB. Analogamente a Java e JavaScript l'interazione con database su Cloud funziona allo stesso modo rispetto a quella con database locali, Listato~\ref{lst:py:1}.
 \begin{lstlisting}[language=Python,caption={Codice Python generato per la variaibile di tipo nosql.}, label={lst:py:1}]
 from pymongo import MongoClient
 [...]
@@ -425,7 +409,7 @@ inserimento = json.loads("Sintassi BSON")
 
 dbConn.insert_many(inserimento)
 \end{lstlisting}
-In Python la lettura degli oggetti contenuti all'interno di un file CSV viene effettuata tramite l'utilizzo della libreria \textit{pandas} \cite{pandas}, già presente all'interno del compilatore Fly.
+In Python la lettura degli oggetti contenuti all'interno di un file CSV viene effettuata tramite l'utilizzo della libreria \textit{pandas} \cite{pandas}, già presente all'interno del compilatore FLY.
 \begin{lstlisting}[language=Python,caption={Codice Python generato per la variabile di tipo query per l’esecuzione di un’interrogazione di inserimento che utilizza una variabile di tipo file.}, label={lst:py:4}]
 oggettiDaInserire = pandas.read_csv([...])
 
@@ -453,7 +437,7 @@ oggettiEliminati = dbConn.delete_many(elimina).deleted_count
 \end{lstlisting}
 
 \section{Caso d'uso}
-Il Listato~\ref{lst:usecase:1} mostra un esempio di interazione con un database MongoDB. L'esempio si basa sulla memorizzazione degli elementi di un file CSV all'interno di un cluster MongoDB distribuito in locale. Successivamente tramite una funzione Fly tradotta in linguaggio JavaScript ed eseguita mediante i servizi FaaS di AWS, vengono eliminati tutti gli elementi all'interno della collezione che hanno come parametro \verb|temperatura| un valore maggiore di 10. \\
+Il Listato~\ref{lst:usecase:1} mostra un esempio di interazione con un database MongoDB. L'esempio si basa sulla memorizzazione degli elementi di un file CSV all'interno di un cluster MongoDB distribuito in locale. Successivamente tramite una funzione FLY tradotta in linguaggio JavaScript ed eseguita mediante i servizi FaaS di AWS, vengono eliminati tutti gli elementi all'interno della collezione che hanno come parametro \verb|temperatura| un valore maggiore di 10. \\
 Il funzionamento del programma viene diviso in due funzioni: \verb|inserisciOg-| \verb|getti()| e \verb|eliminaTemperatureElevate()|. \\
 La funzione \verb|inserisciOggetti()| comprende le istruzioni per: 
 \begin{itemize}

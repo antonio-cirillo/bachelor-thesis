@@ -4,13 +4,13 @@ In questa prima parte del capitolo introduttivo è fornita una panoramica genera
 \section{Cloud Computing}
 Non esiste un'unica definizione di Cloud Computing, infatti quest'ultimo viene definito in modo differente da varie aziende e sviluppatori. Una definizione data da Amazon, uno dei più importanti Cloud Provider al mondo, è la seguente: \textit{“Il cloud computing consiste nella distribuzione on-demand delle risorse IT tramite Internet, con una tariffazione basata sul consumo. Piuttosto che acquistare, possedere e mantenere i data center e i server fisici, è possibile accedere a servizi tecnologici, quali capacità di calcolo, storage e database, sulla base delle proprie necessità affidandosi a un fornitore cloud quale Amazon Web Services (AWS)."} \cite{aws}. \\
 Da questa definizione si evince che un Cloud è un modello di calcolo distribuito che permette di allocare, su richiesta (on-demand), un insieme di risorse di calcolo messe a disposizione da un fornitore, il Cloud Provider. \\
-Il motivo principale per il quale questo paradigma si è diffuso molto rapidamente è il modello di costo su cui si basa il Cloud Computing, ovvero il modello pay-as-you-go. Grazie al Cloud Computing le aziende non hanno bisogno di possedere un'infrastruttura di calcolo ma possono nolleggiarla dal Cloud Provider che, inoltre, si occupa anche della sua manutenzione, gestione e aggiornamento. Questo vantaggio non va solo a favore di quelle che sono le grandi imprese preesistenti, ma favorisce anche l'ingresso nel mercato di nuove imprese.
+Il motivo principale per il quale questo paradigma si è diffuso molto rapidamente è il modello di costo su cui si basa il Cloud Computing, ovvero il modello pay-as-you-go. Questo modello permette alle aziende di pagare soltanto per i servizi utilizzati, in relazione al tempo di impiego. Grazie al Cloud Computing le aziende non hanno bisogno di possedere un'infrastruttura di calcolo ma possono noleggiarla dal Cloud Provider che, inoltre, si occupa anche della sua manutenzione, gestione e aggiornamento. Questo vantaggio non va solo a favore di quelle che sono le grandi imprese preesistenti, ma favorisce anche l'ingresso nel mercato di nuove imprese.
 
 \subsection{Architetture}
 Le architetture di Cloud Computing definiscono chi ha il controllo dell'infrastrurra e dove essa risiede. Le architetture possono essere suddivise in tre modelli:
 \begin{description}
     \item[Public Cloud]Modello principale d'erogazione di servizi accessibili ad un pubblico generale su abbonamento, tramite Internet. I leader del settore sono Amazon Web Service, Microsoft Azure, Google Cloud. 
-    \item[Private Cloud]Sistema di server dedicato completamente alle infrastrutture di una singola azienda. Possiede le stesse caratteristiche del Public Cloud ma offre una maggiore sicurezza.
+    \item[Private Cloud]Sistema di server dedicato completamente alle infrastrutture di una singola azienda. Offre una maggiore sicurezza rispetto al Public Cloud ma è svantaggioso sotto il punto di vista dei costi per l'azienda e non ha la scalabilità quasi illimitata fornita dai grandi Cloud Provider.
     \item[Hybrid Cloud]Formato dalla combinazione delle due tipologie precedenti, unendo i vantaggi di entrambe le architetture.
 
 \end{description}    
@@ -33,7 +33,7 @@ I tre modelli principali sono:
     
     \item[Platform-as-a-Service (PaaS)]Con il modello PaaS il consumatore non deve più gestire l'infrastruttura sottostante. La gestione dell'hardware e del sistema operativo passa al Cloud Provider in modo da permettere al consumatore di concentrarsi solo sulla gestione delle applicazioni. 
 
-    \item[Software-as-a-Service (SaaS)]Con il modello SaaS il consumatore ha la possibilità di utilizzare software pronti all'uso, eseguiti e gestiti dal Cloud Provider, tramite l'utilizzo del browser. Un esempio comune di applicazione SaaS è Gmail: Gmail permette all'utente di inviare e ricevere e-mail tramite un qualsiasi browser, trascurando ogni aspetto dell'infrastruttura sottostante.
+    \item[Software-as-a-Service (SaaS)]Con il modello SaaS il consumatore ha la possibilità di utilizzare software pronti all'uso, eseguiti e gestiti dal Cloud Provider, tramite l'utilizzo del browser. Un esempio comune di applicazione SaaS è Gmail che permette all'utente di inviare e ricevere e-mail tramite un qualsiasi browser, trascurando ogni aspetto dell'infrastruttura sottostante.
 \end{description}
 
 \subsection{Serverless Computing} \label{serverless}
@@ -50,7 +50,7 @@ Il multi-cloud è è un paradigma nato per trarre vantaggio dall'esistenza di di
     \item \textit{distribuzione su più paesi} - possibilità di scegliere l'area geografica in cui i dati saranno memorizzati fisicamente, optando per paesi che più si adattano alle esigenze individuali sulla base di regolamenti e leggi interne.
 
 \end{itemize}
-L'utilizzo del multi-cloud, tuttavia, incrementa notevolmente la complessità del sistema, in quanto richiede la conoscenza degli strumenti e delle librerie proprietarie fornite da ogni cloud provider che tendono ad essere anche molto diversi tra di loro.
+L'utilizzo del multi-cloud, tuttavia, incrementa notevolmente la complessità del sistema, in quanto richiede la conoscenza degli strumenti e delle librerie proprietarie fornite da ogni Cloud Provider che tendono ad essere anche molto diversi tra di loro.
 
 \section{Database}
 Lavorare con i dati è una necessità in qualsiasi contesto e applicazione ed i database sono lo strumento che ne permette la gestione e l'archiviazione. In questo lavoro di tesi verrà descritta l'implementazione all'interno del linguaggio FLY del supporto ai database non relazionali, pertanto in questo capitolo verranno introdotti i concetti di database e di database non relazionali.
@@ -65,9 +65,9 @@ Alcune persone affermano che la parola NoSQL stia per “non SQL", altre invece 
 I motivi principali che hanno portato ad un utilizzo sempre più frequente dei database NoSQL sono:
 \begin{itemize}
     
-    \item \textit{flessibilità} - i database NoSQL offrono agli sviluppatori la possibilità di poter rappresentare i dati utilizzando diversi modelli di database;
-    \item \textit{elevate prestazioni} - i database NoSQL sono ottimizzati per modelli di dati specifici e schemi di accesso che consentono prestazioni più elevate rispetto ai database relazionali;
-    \item \textit{scalabilità} - le strutture dati utilizzate nei database NoSQL permettono di avere una scalabilità orizzontale invece che verticale.
+    \item \textit{flessibilità} - possibilità di poter rappresentare i dati utilizzando diversi modelli di database;
+    \item \textit{elevate prestazioni} - ottimizzati per modelli di dati specifici e schemi di accesso che consentono prestazioni più elevate rispetto ai database relazionali;
+    \item \textit{scalabilità} - le strutture dati utilizzate permettono di avere una scalabilità orizzontale invece che verticale.
 
 \end{itemize}
 \subsection{Differenza fra NoSQL e SQL}
@@ -100,10 +100,10 @@ MongoDB \cite{mongodb} è un database NoSQL di tipo documentale open source che 
 MongoDB, diversamente da molti altri database di tipo documentale, supporta le transazioni ACID complete e permette due tipi di realazioni anzinché una: riferimento e incorportamento. \\
 MongoDB negli anni è diventato uno dei database più diffusi per diverse ragioni:
 \begin{itemize}
-    
-    \item \textit{completamente automatizzato} - il servizio di database offerto da MongoDB è completamente gestito da MongoDB Atlas \cite{atlas}. Il provisioning, la configurazione e la distribuzione dell'infrastruttura sono completamente automatizzati con Atlas. Grazie a queste funzionalità, Atlas permette di utilizzare in modo semplice e intuitivo un database NoSQL su Cloud, in modo da concentrarsi solo su quello che è la memorizzazione e la gestione dei dati, ignorando tutta la gestione dell'infrastruttura sottostante;
-    \item \textit{compatibile} - MongoDB è completamente compatibile con i vari servizi di gestione di database documentali offerti dai vari Cloud Provider;
+    \item \textit{completamente automatizzato} - il servizio di database offerto è completamente gestito da Atlas \cite{atlas}. Esso si occupa di automatizzare operazioni come il provisioning, la configurazione e la distribuzione dell'infrastruttura. Grazie a queste funzionalità, Atlas permette di utilizzare in modo semplice e intuitivo un database NoSQL su Cloud, in modo da concentrarsi solo su quello che è la memorizzazione e la gestione dei dati, ignorando tutta la gestione dell'infrastruttura sottostante;
+    \item \textit{compatibile} - completamente compatibile con i vari servizi di gestione di database documentali offerti dai vari Cloud Provider;
     \item \textit{multi-cloud} - MongoDB è l'unico database multi-cloud distribuito a livello globale. Permette la possibilità di sviluppare un singolo cluster su diversi Cloud Provider senza la complessità operativa della gestione della replica e della migrazione dei dati tra cloud;
-    \item \textit{affidabile} - MongoDB è stato creato con tolleranza di errore distribuita e ripristino automatizzato dei dati. I cluster sono progettati per la resilienza con un set di repliche a tre nodi minimo distribuiti tra le zone di disponibilità all'interno di un'area cloud. Nel caso in cui un nodo primario non è disponibile, Atlas eseguirà automaticamente un rimpiazzo di quest'ultimo con una componente analoga in pochi secondi, senza necessità di intervento manuale.
-
+    \item \textit{affidabile} - tolleranza di errore distribuita e ripristino automatizzato dei dati. I cluster sono progettati per la resilienza con un set di repliche a tre nodi minimo distribuiti tra le zone di disponibilità all'interno di un'area cloud. Nel caso in cui un nodo primario non è disponibile, Atlas eseguirà automaticamente un rimpiazzo di quest'ultimo con una componente analoga in pochi secondi, senza necessità di intervento manuale.
 \end{itemize}
+
+\subsection{Database su Cloud}
